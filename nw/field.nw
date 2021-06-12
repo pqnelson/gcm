@@ -1,0 +1,67 @@
+\chapter{Field Quantities}
+
+We have quantities of interest in our climate model be described by
+tensors: scalar fields like temperature or pressure are rank-zero
+tensors, vector fields like fluid velocity are rank-one tensors, the
+stress tensor is a rank-two tensor. Our class hierarchy will have an
+abstract [[field]] class, extended as one of three: [[scalar_field]],
+[[vector_field]], or [[tensor_field]] for rank-2 tensors.
+
+\section{Scalar Fields}
+
+Scalar fields are one of the two important abstractions for climate
+models (and fluid mechanics in general). We're making the design
+decision to restrict attention to real-valued scalar fields. For our
+purposes, double-precision floating point numbers approximate real
+numbers.
+
+<<scalar\_field\_class.f90>>=
+module scalar_field_class
+  use iso_fortran_env, only: wp => real64, int32
+  implicit none
+
+  private
+  type scalar_field
+     private
+     real(wp), allocatable, dimension(:) :: node
+   contains
+     procedure :: nodal_values
+     procedure :: field_size
+     <<[[scalar_field]] arithmetic operator declarations>>
+  end type scalar_field
+  contains
+  <<[[scalar_field]] functions>>
+end module scalar_field_class
+
+@ The scalar field has the basic operators defined: addition
+$(\varphi_{1}+\varphi_{2})(x) = \varphi_{1}(x) + \varphi_{2}(x)$, and so
+on.
+
+<<[[scalar_field]] arithmetic operator declarations>>=
+     procedure, private :: product
+     generic            :: operator(*) => product
+     procedure, private :: ratio
+     generic            :: operator(/) => ratio
+     procedure, private :: add
+     generic            :: operator(+) => add
+@
+
+\subsection{Constructor}
+
+\subsection{Accessor Functions}
+
+We can continue on to obtain the discrete approximation encoded by the
+scalar field, evaluated on the mesh points.
+
+<<[[scalar_field]] functions>>=
+  pure integer(int32) function field_size(this)
+    class(scalar_field), intent(in) :: this
+    field_size = size(this%node)
+  end function
+
+  pure function nodal_values(this)
+    class(scalar_field), intent(in) :: this
+    real(wp), allocatable, dimension(:) :: nodal_values
+    nodal_values = this%node
+  end function
+@

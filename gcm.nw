@@ -1,0 +1,25 @@
+\documentclass[oneside]{book}
+\usepackage{noweb}\pagestyle{noweb}\noweboptions{}
+\usepackage{gcmmac}
+
+% To determine the number of commits done so far, use:
+% git rev-list HEAD --count
+\title{General Circulation Model}
+\author{Alex Nelson}
+\date{June 4, 2021}
+\begin{document}
+\frontmatter
+\maketitle
+\tableofcontents
+\include{tex/preface}
+
+
+\mainmatter
+\include{tex/intro}
+\include{tex/field}
+@
+\nocite{*}
+\bibliographystyle{siam}
+%\bibliographystyle{ieeetr}
+\bibliography{gcm}
+\end{document}

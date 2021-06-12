@@ -1,0 +1,57 @@
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{gcmmac}[2021/06/05 GCM Macros Package]
+
+\RequirePackage[inner=5.67pc,outer=11.33pc]{geometry}
+\RequirePackage{amssymb,amsmath}
+\RequirePackage{amsthm}
+\RequirePackage{bm}
+\RequirePackage[nottoc,notlot,notlof]{tocbibind}
+\RequirePackage[hidelinks]{hyperref}
+
+
+% theorems
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{lemma}[thm]{Lemma}
+
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{ex}[thm]{Example}
+
+\theoremstyle{remark}
+\newtheorem{rmk}[thm]{Remark}
+\newtheorem{note}[thm]{Note}
+
+% adjust whitespace between code chunks
+% https://www.cs.tufts.edu/~nr/noweb/FAQ.html
+\def\nwendcode{\endtrivlist \endgroup \vfil\penalty10\vfilneg}
+\let\nwdocspar=\smallbreak
+
+
+% avoid making the page numbers reset in mainmatter
+% https://tex.stackexchange.com/a/61473/14751
+\def\pagenumbering#1{%
+  %\global\c@page \@ne
+  \gdef\thepage{\csname @#1\endcsname
+   \c@page}}
+
+%%% Notation and logos
+% programming languages
+\def\CEE/{\textsf{C}}
+\def\FORTRAN/{\textsc{Fortran}}
+
+% notation
+\let\oldvec\vec
+\let\vec\bm
+\def\D{\mathrm{d}} % for ordinary derivatives, differentials, etc.
+\def\E{\mathrm{e}} % \E \approx 2.7182...
+\def\I{\mathrm{i}} % \I^2 = -1
+\def\materialD{\mathrm{D}}
+
+\newcommand\grad{\vec{\nabla}}
+\newcommand\curl{\vec{\nabla}\times}
+
+
+\endinput
