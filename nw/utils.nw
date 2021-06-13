@@ -1,0 +1,80 @@
+\chapter{Utility Functions}
+
+There are a number of utilities useful for modern programming practice
+which \FORTRAN/ does not provide. We collect them into a module.
+
+<<utils.f90>>=
+module utils
+  use iso_fortran_env, only: real64, int32
+  implicit none
+    <<[[utils]] Parameters>>
+  contains
+    <<[[utils]] Functions>>
+end module utils
+@
+
+\noindent\ignorespaces%
+The first parameter worth standardizing is the working precision. Some
+computers may handle quadrouple precision (i.e., 128-bit floating point
+arithmetic), others hand double precision (i.e., 64-bit floating-point),
+and few handle only single precision arithmetic. We store the precision
+in [[wp]]. If the user has access to exotic hardware and can perform
+128-bit floating point arithmetic, then there is only one line of code
+that needs to change.
+
+<<[[utils]] Parameters>>=
+  integer, parameter :: wp = real64
+@
+
+\noindent\ignorespaces%
+We also want to be able to encode program-by-contract by assertions.
+Conventions among \FORTRAN/ programmers use the \CEE/ preprocessor to
+implement macros. The macros amount to calling an assertion failure
+report subroutine upon failing a contract (except when compiled with
+[[NDEBUG]] defined\footnote{This might seem odd to mathematicians and
+scientists, but it is grandfathered in: \CEE/ started this tradition,
+and other languages picked it up. Given the choice for doing what is
+logical or what is conventional, we follow the programmer's creed and
+adhere to the principle of least surprise [i.e., convention].}). The
+report failure subroutine simply reports the failure, and stops the
+program.
+
+<<[[utils]] Functions>>=
+<<Define macro to parse [[arg]] as string>>
+<<Define [[assert]] macro>>
+
+subroutine assert_failed(file, line_number, test, msg)
+  implicit none
+  character(*), intent(in) :: file, test, msg
+  integer, intent(in) :: line_number
+  print *, "Assert: ",trim(test)," Failed at ",trim(file),":",line_number
+  print *, "Msg:", trim(msg)
+  stop
+end subroutine assert
+@
+
+\noindent\ignorespaces%
+The first macro worth considering simply stringifies
+its argument.
+
+<<Define macro to parse [[arg]] as string>>=
+#if (defined(GFORTRAN) || defined(G95) || defined(PGI))
+# define MKSTR(x) "x"
+#else
+# define MKSTR(x) #x
+#endif
+@
+
+\noindent\ignorespaces%
+The main star of the assertion faculties is the macro [[assert()]]. We
+can turn it off with a compiler parameter, so in production it will not
+consume CPU cycles.
+
+<<Define [[assert]] macro>>=
+#ifndef NDEBUG
+#define assert(x, msg) if (.not. (x)) \
+               call assert_failed(FILE, LINE, MKSTR(x), msg)
+#else
+#define assert(x, msg)
+#endif
+@

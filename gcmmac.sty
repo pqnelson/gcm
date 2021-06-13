@@ -1,12 +1,13 @@
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
 \ProvidesPackage{gcmmac}[2021/06/05 GCM Macros Package]
-
+\RequirePackage{noweb}
 \RequirePackage[inner=5.67pc,outer=11.33pc]{geometry}
 \RequirePackage{amssymb,amsmath}
 \RequirePackage{amsthm}
 \RequirePackage{bm}
 \RequirePackage[nottoc,notlot,notlof]{tocbibind}
 \RequirePackage[hidelinks]{hyperref}
+
 
 
 % theorems
@@ -41,6 +42,8 @@
 % programming languages
 \def\CEE/{\textsf{C}}
 \def\FORTRAN/{\textsc{Fortran}}
+\def\DISORT/{\textsc{disort}}
+\def\RRTM/{\textsc{rrtm}}
 
 % notation
 \let\oldvec\vec
@@ -53,5 +56,9 @@
 \newcommand\grad{\vec{\nabla}}
 \newcommand\curl{\vec{\nabla}\times}
 
+
+
+\renewcommand\nwendcode{\vskip-0.1in\noindent\hskip-\codemargin\rule{2cm}{0.4pt}\endtrivlist\endgroup}
+\let\nwdocspar=\smallbreak
 
 \endinput

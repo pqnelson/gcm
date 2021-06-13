@@ -36,10 +36,11 @@ The conservation of mass may be written in a variety of ways, usually as
 The atmosphere typically doesn't have a constant density, so this can't
 be simplified much further.
 
-For the equation of state, we'll need to invoke
-thermodynamics. Fortunately, the atmosphere is close enough to an ideal
-gas that we can rely on quite a few results from the literature. The
-interested reader may peruse Vallis~\cite{vallis_2017} for details.
+For the equation of state, we'll need to invoke thermodynamics.
+Fortunately, the atmosphere is close enough to an ideal gas that we can
+rely on quite a few results from the literature. The interested reader
+may peruse Vallis~\cite{vallis_2017} or Holton and
+Hakim~\cite{holton2013dynamicMeteorology} for details.
 
 \subsection{In Rotating Reference Frame}
 
@@ -224,7 +225,8 @@ Taking all three approximations gives us the conservation of momentum equations:
 \end{subequations}
 \end{prop}
 
-Note that in our approximations, we now have
+\begin{note}
+In our approximations, we now have
 \begin{equation}
   \frac{\materialD}{\materialD t}=\frac{\partial}{\partial t} +
   \frac{u}{a\cos(\theta)}\frac{\partial}{\partial\lambda} +
@@ -235,6 +237,7 @@ It is conventional to introduce the Coriolis parameter
   f = 2\Omega\sin(\theta)
 \end{equation}
 to simplify calculations.
+\end{note}
 
 \begin{prop}
 The mass conservation equation for a shallow atmosphere becomes
@@ -259,6 +262,7 @@ or equivalently
 \end{equation}
 \end{prop}
 
+\subsection{Thermodynamics for Atmospheric Fluid}
 We need some way to relate density to pressure, which requires
 thermodynamics. Atmosphere is approximately an ideal gas, so we could
 use
@@ -300,12 +304,57 @@ which gives us
 \begin{equation}
 c_{v}\frac{\materialD T}{\materialD t} + p\alpha\grad\cdot\vec{u} = \dot{Q}.
 \end{equation}
-Arguably, for a steady state, $\dot{Q}=0$.
+Arguably, for a steady state, $\dot{Q}=0$. Realistically, the Sun
+\emph{is} an external heat source, and we need to model how it heats the
+atmosphere, which is the rich subject of radiative transfer.
 
 \section{Radiative Transfer}
 
 We need to incorporate heating from sunlight, which requires radiative
-transfer --- for a review, see Liou~\cite{liou2002introduction}.
+transfer --- for a review, see Liou~\cite{liou2002introduction} and
+Stamnes, Thomas, and Stamnes~\cite{stamnes_thomas_stamnes_2017}.
+The latter are part of the team who coded the \DISORT/\index{\DISORT/}
+library\footnote{\DISORT/ homepage \url{http://www.rtatmocn.com/disort/}},
+which underpins many radiative transfer libraries like the
+\RRTM/\index{\RRTM/} suite\footnote{\url{http://rtweb.aer.com/}}.
+
+The basic radiative transfer equation is an integro-differential
+equation
+\begin{equation}\label{eq:integro-diff-radiative-transfer}
+  \mu\frac{\D I(\tau,\mu,\phi)}{\D\tau}
+  = I(\tau, \mu, \phi) - S(\tau, \mu, \phi)
+\end{equation}
+where $\tau$ is the optical depth of the medium; $I$ the diffuse
+specific intensity in a cone of unit solid angle along direction $\mu$,
+$\phi$; and $S$ is the ``source function''
+\begin{equation}
+  \begin{split}
+    S(\tau, \mu, \phi) &= Q^{\text{(beam)}}(\tau,\mu,\phi)  + Q^{\text{(therm)}}(\tau) \\
+    &\qquad + \frac{\omega(\tau)}{4\pi}
+  \int^{2\pi}_{0}\int^{1}_{-1} P(\tau,\mu,\phi;\mu',\phi')I(\tau,\mu',\phi')\,\D\phi'\,\D\mu'.
+  \end{split}
+\end{equation}
+Here $\omega(\tau)$ is the ``single scattering albedo'' of the medium
+(i.e., the fraction of an incident beam which is scattered by that
+volume), and $P$ is the ``scattering phase function'' describing the
+angular scattering pattern of an infinitesimal volume. The curious
+reader may profitably read chapters 5--8 of Stamnes and
+friends~\cite{stamnes_thomas_stamnes_2017}.
+
+\begin{note}
+Laszlo and friends~\cite{Laszlo2016} explain how \DISORT/ solves Eq
+\eqref{eq:integro-diff-radiative-transfer} in three basic steps:
+\begin{enumerate}
+\item Transform the equation into a set of radiative transfer equations
+  by separation of azimuth dependence;
+\item Transforming these equations into a system of ordinary
+  differential equations;
+\item Solving the System of ODEs using linear algebra.
+\end{enumerate}
+This strategy may be found in Chandrasekhar's book
+\emph{Radiative Transfer} (1960) and refined over time.
+\end{note}
+
 
 \section{ADT Calculus}
 
