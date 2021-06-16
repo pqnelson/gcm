@@ -17,7 +17,8 @@ numbers.
 
 <<scalar\_field\_class.f90>>=
 module scalar_field_class
-  use iso_fortran_env, only: wp => real64, int32
+  use iso_fortran_env, only: int32
+  use utils
   implicit none
 
   private

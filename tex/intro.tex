@@ -18,7 +18,7 @@ The conservation of momenta amounts to Newton's second Law
   \frac{\materialD\vec{u}}{\materialD t}
   =\frac{-1}{\rho}\nabla p + \nu\nabla^{2}\vec{u} + \vec{F}
 \end{equation}
-where $\vec{v}$ is the velocity vector field for the atmosphere, $\rho$
+where $\vec{u}$ is the velocity vector field for the atmosphere, $\rho$
 its density, $p$ pressure, $\nu$ kinematics viscosity, and $\vec{F}$
 external forces like gravity. Here we use the material derivative
 \begin{equation}
@@ -232,12 +232,16 @@ In our approximations, we now have
   \frac{u}{a\cos(\theta)}\frac{\partial}{\partial\lambda} +
   \frac{v}{a}\frac{\partial}{\partial\theta} + w\frac{\partial}{\partial z}.
 \end{equation}
-It is conventional to introduce the Coriolis parameter
+\end{note}
+
+\begin{defn}
+It is conventional to introduce the \define{Coriolis parameter}
 \begin{equation}
   f = 2\Omega\sin(\theta)
 \end{equation}
-to simplify calculations.
-\end{note}
+to simplify calculations. Empirically, $\Omega=7.2921150\times10^{-5}\,\mathrm{rad}\cdot\mathrm{s}^{-1}$.
+\end{defn}
+
 
 \begin{prop}
 The mass conservation equation for a shallow atmosphere becomes
@@ -271,8 +275,12 @@ use
 \end{equation}
 where $R=287\,\mathrm{J}\,\mathrm{kg}^{-1}\,\mathrm{K}^{-1}$ is the gas
 constant for dry air, $T$ is temperature (an unknown). We need another
-equation to fix $T$. For a simple ideal gas, the heat capacity is
-constant, so
+equation to fix $T$. A first approximation simply fixes $T=T_{0}$ to be
+constant, a second approximation fixes $T=T_{0}-T_{1}z$ or something
+similar. But realistically, we want to model temperature from first
+principles.
+
+For a simple ideal gas, the heat capacity is constant, so
 \begin{equation}
   I = cT
 \end{equation}
@@ -307,6 +315,20 @@ c_{v}\frac{\materialD T}{\materialD t} + p\alpha\grad\cdot\vec{u} = \dot{Q}.
 Arguably, for a steady state, $\dot{Q}=0$. Realistically, the Sun
 \emph{is} an external heat source, and we need to model how it heats the
 atmosphere, which is the rich subject of radiative transfer.
+
+\begin{rmk}
+  We can combine several results from thermodynamics to write the first
+  law as
+  \begin{equation}
+    \dot{Q} = c_{p}\frac{\materialD T}{\materialD t} - \frac{1}{\rho}\frac{\materialD p}{\materialD t}
+  \end{equation}
+  where for the atmosphere
+  $c_{p}=1003\,\mathrm{J}\cdot\mathrm{kg}^{-1}\cdot\mathrm{K}^{-1}$, and
+  $\dot{Q}$ is the heat rate per unit mass. This is typically used in
+  numerical weather prediction. See chapter 2 of
+  Kalnay~\cite{kalnay_2002} but be warned: Kalnay uses $Q$ whereas we
+  use $\dot{Q}$.
+\end{rmk}
 
 \section{Radiative Transfer}
 

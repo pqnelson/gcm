@@ -1,0 +1,44 @@
+\chapter{Fortran Style}
+
+\begin{itemize}
+\item In each module, submodule, and programs, be sure to declare
+  \verb|implicit none|. Subroutines, functions, types, etc., all
+  ``inherit'' this from the module containing them.
+\item Organize all code to live in a module, submodule, or a
+  \verb|program| unit.
+\item Each module or \verb|program| is stored in its own file.
+\item Magic numbers and literals are forbidden: store them as parameter
+  constants in appropriate modules.
+\item Each statement gets its own line.
+\end{itemize}
+
+Modules should have the following skeletal structure:
+\begin{verbatim}
+module my_mod_name
+   use other_mod, only: param1, ..., fun1, ...
+   use another_mod, only: ...
+   implicit none
+   private
+   ! parameter declarations
+   ! variable  declarations
+   public :: integrate, renormalization_group_flow, ...
+
+contains
+
+   subroutine integrate(...)
+      ! ...
+   end subroutine
+
+   ! ...
+end module
+\end{verbatim}
+The \verb|private| clause will make everything private except those
+things explicitly appearing in the \verb|public| list.
+
+\section{Naming Conventions}
+
+\begin{itemize}
+\item Use kebab case --- i.e., lower case letters, separated by
+  underscores, like: \verb|speed_of_light|.
+\item Be concise, not cryptic.
+\end{itemize}

@@ -26,7 +26,12 @@ that needs to change.
   integer, parameter :: wp = real64
 @
 
-\noindent\ignorespaces%
+\section{Assertions for Contracts}
+
+For most production code, it's useful to document assumptions and
+requirements in terms of assertions. This has been a ``lightweight
+programming-by-contract'' methodology for many languages.
+
 We also want to be able to encode program-by-contract by assertions.
 Conventions among \FORTRAN/ programmers use the \CEE/ preprocessor to
 implement macros. The macros amount to calling an assertion failure
@@ -72,8 +77,10 @@ consume CPU cycles.
 
 <<Define [[assert]] macro>>=
 #ifndef NDEBUG
-#define assert(x, msg) if (.not. (x)) \
-               call assert_failed(FILE, LINE, MKSTR(x), msg)
+#define assert(x, msg)                                \
+    if (.not. (x)) then                               \
+        call assert_failed(FILE, LINE, MKSTR(x), msg) \
+    end if
 #else
 #define assert(x, msg)
 #endif

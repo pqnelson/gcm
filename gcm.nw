@@ -1,11 +1,11 @@
 \documentclass[oneside]{book}
+\title{General Circulation Model}
+\author{Alex Nelson}
+\date{June 4, 2021}
 \usepackage{gcmmac}
 
 % To determine the number of commits done so far, use:
 % git rev-list HEAD --count
-\title{General Circulation Model}
-\author{Alex Nelson}
-\date{June 4, 2021}
 \begin{document}
 \frontmatter
 \maketitle
@@ -18,6 +18,8 @@
 \include{tex/utils}
 \include{tex/field}
 @
+\appendix
+\include{tex/style-guide}
 \backmatter
 \nocite{*}
 \bibliographystyle{siam}
