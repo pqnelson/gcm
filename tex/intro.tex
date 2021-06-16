@@ -1,5 +1,15 @@
 \chapter{Introduction}
 
+
+\epigraph{A complex piece of software consists of simple parts and simple
+relations between those parts; the programmer's task is to state those
+parts and those relationships, in whatever order is best for human
+comprehension\dots%---not in some rigidly determined order like top-down or
+%bottom-up.
+}{``Literate Programming'' (1984)\\ % section J
+\textsc{Donald Knuth}} % The Computer Journal, vol. 27
+
+
 \section{Structure of a General Circulation Model}
 
 A simple general circulation model consists of a ``dynamical core'':
@@ -150,13 +160,12 @@ momentum equations.
   The radius of the Earth $a$ may be approximated as
   \begin{subequations}
     \begin{equation}
-      a = (20000/\pi)\,\mathrm{km}
+      a = \SI{20000/\pi}{\km}
   \end{equation}
   or, to some 44 digits
   \begin{equation}
     a\approx
-    6366.19772\,36758\,13430\,75535\,05349\,00574\,48137\,83858%\,2962
-    \,\mathrm{km}.
+    \SI{6366.1977236758134307553505349005744813783858}{\km}.%\,2962
   \end{equation}
   \end{subequations}
 \end{prop}
@@ -165,16 +174,28 @@ momentum equations.
   quarter of the Earth's circumference through the North and South
   poles, starting at the equator, would be
 \begin{equation}
-  (2\pi a)/4 = 10^{4}\,\mathrm{km}
+  (2\pi a)/4 = \SI{1e4}{\km}
 \end{equation}
 where $a$ is Earth's radius. Modern measurements note the meridional
-circumference of the Earth is $40\,007.86\,\mathrm{km}$, so this
-historic definition has an absolute error of $7.86\,\mathrm{km}$ (making
+circumference of the Earth is $\SI{40007.86}{\km}$, so this
+historic definition has an absolute error of $\SI{7.86}{\km}$ (making
 it a useful approximation). In reality, Earth's equatorial
-radius $a_{eq}\approx 6378.137\,\mathrm{km}$ and polar radius
-$a_{pol}\approx6356.752\,\mathrm{km}$ have a geometric mean of
-$6367.44\,\mathrm{km}$.
+radius $a_{eq}\approx \SI{6378.137}{\km}$ and polar radius
+$a_{pol}\approx\SI{6356.752}{\km}$ have a geometric mean of
+$\SI{6367.44}{\km}$.
 \end{proof}
+\begin{cor}
+  The inverse of Earth's radius is
+  \begin{subequations}
+  \begin{equation}
+    \frac{1}{a} = \frac{\pi}{\SI{2e4}{\km}}
+  \end{equation}
+  or, to 36 digits
+  \begin{equation}
+    \frac{1}{a}\approx \SI{1.57079632679489661923132169163975144e-4}{\per\km}
+  \end{equation}
+  \end{subequations}
+\end{cor}
 
 \subsection{Primitive Equations}
 
@@ -186,16 +207,19 @@ Phillips~\cite{phillips1966TheEquationsofMotionforaShallowRotatingAtmosphereandt
 and White~\cite{white2002}.}
 
 We usually simplify these equations further, noting that the height of
-the atmosphere is no greater than $100\,\mathrm{km}$ which is about
+the atmosphere is no greater than $\SI{100}{\km}$ which is about
 60-times smaller than the radius of the Earth. So we could think of the
-atmosphere as a shallow fluid. That is to say, we treat $r=a+z$ where
+atmosphere as a shallow fluid.\marginpar{(1) Shallow fluid: $r=a+z\approx a$,\\
+  $\partial/\partial r=\partial/\partial z$}
+That is to say, we treat $r=a+z$ where
 $a$ is the radius of the Earth and $z\ll a$ the altitude. Consequently,
 we replace $\partial/\partial r$ by $\partial/\partial z$ and all other
 occurrences of $r$ by $a$. If we make this simplification, then we
-are also forced to make the hydrostatic approximation: in the vertical
+are also forced to make the hydrostatic
+approximation: in the vertical
 momentum equation, the gravitational term is balanced by the pressure
 gradient term (and these are the dominant terms in the equation, the
-other terms are negligible in comparison). That is to say, we use
+other terms are negligible in comparison). That is to say, we use\marginpar{(2)Hydrostatic Approximation}
 \begin{equation}
   \frac{\partial p}{\partial z}=-\rho g
 \end{equation}
@@ -204,7 +228,7 @@ two approximations are bundle deal --- they are taken together, or not
 at all. For large-scale atmospheric (and oceanic) flow on Earth, they're
 a pretty good approximation.
 
-The traditional approximation discards Coriolis terms in the horizonal
+The traditional approximation\marginpar{(3) Traditional approximation} discards Coriolis terms in the horizonal
 momentum equations, and the smaller metric terms $uw/r$ and
 $vw/r$. This approximation is largely independent of the shallow fluid
 and hydrostatic approximations, and may be empirically justified by
@@ -273,7 +297,7 @@ use
 \begin{equation}
   p = \rho R T
 \end{equation}
-where $R=287\,\mathrm{J}\,\mathrm{kg}^{-1}\,\mathrm{K}^{-1}$ is the gas
+where $R=\SI{287}{\joule\per\kilogram\per\kelvin}$ is the gas
 constant for dry air, $T$ is temperature (an unknown). We need another
 equation to fix $T$. A first approximation simply fixes $T=T_{0}$ to be
 constant, a second approximation fixes $T=T_{0}-T_{1}z$ or something
@@ -384,3 +408,11 @@ Following scientific programming tradition from SAGA\footnote{\url{https://www.i
 Rouson and friends~\cite{rouson2011scientific,rouson2008grid}, and much
 hard earned experience, we will be encoding mathematical equations
 directly into the abstract data types.
+
+% There are a lot of people observing sin(x) is inaccurate on Intel CPUs
+% - https://hackernoon.com/help-my-sin-is-slow-and-my-fpu-is-inaccurate-a2c751106102
+% - https://randomascii.wordpress.com/2014/10/09/intel-underestimates-error-bounds-by-1-3-quintillion/
+% - http://notabs.org/fpuaccuracy/
+%
+% Also see:
+% - https://latkin.org/blog/2014/11/09/a-simple-benchmark-of-various-math-operations/

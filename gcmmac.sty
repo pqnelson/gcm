@@ -1,14 +1,20 @@
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
 \ProvidesPackage{gcmmac}[2021/06/05 GCM Macros Package]
+
+\RequirePackage{epigraph}
+\RequirePackage{marginnote}
+\RequirePackage{siunitx}
 \RequirePackage{noweb}
-\RequirePackage[inner=5.67pc,outer=11.33pc]{geometry}
+\RequirePackage[inner=5.67pc,outer=11.33pc,marginpar=10pc]{geometry}
 \RequirePackage{amssymb,amsmath}
 \RequirePackage{amsthm}
 \RequirePackage{bm}
 \RequirePackage[nottoc,notlot,notlof]{tocbibind}
 \RequirePackage[hidelinks]{hyperref}
 
+\noweboptions{english}
 
+\def\marginpar#1{\marginnote{\footnotesize\em #1}}
 
 % theorems
 \theoremstyle{plain}
@@ -61,6 +67,8 @@
 \renewcommand\nwendcode{\vskip-0.1in\noindent\hskip-\codemargin\rule{2cm}{0.4pt}\endtrivlist\endgroup}
 \let\nwdocspar=\smallbreak
 
+
 \def\define#1{\textbf{``#1''}}
 
 \endinput
+

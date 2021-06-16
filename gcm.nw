@@ -2,13 +2,14 @@
 \title{General Circulation Model}
 \author{Alex Nelson}
 \date{June 4, 2021}
+
 \usepackage{gcmmac}
 
 % To determine the number of commits done so far, use:
 % git rev-list HEAD --count
 \begin{document}
 \frontmatter
-\maketitle
+\maketitle\setcounter{page}{2}
 \tableofcontents
 \include{tex/preface}
 
