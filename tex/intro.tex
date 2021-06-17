@@ -197,6 +197,12 @@ $\SI{6367.44}{\km}$.
   \end{subequations}
 \end{cor}
 
+This speeds up performance when doing calculations, since multiplication
+is between 5- to 9-times faster than division on x86 CPUs\footnote{See, e.g.,
+Wittmann and friends~\cite{wittmann2015short} or more informally \url{https://latkin.org/blog/2014/11/09/a-simple-benchmark-of-various-math-operations/}}.
+Such is the proportion of CPU latency (i.e., the time from the start of
+the instruction until the operation concludes).
+
 \subsection{Primitive Equations}
 
 There are three simplifications we could make: the shallow fluid
