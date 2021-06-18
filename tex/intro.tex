@@ -21,6 +21,29 @@ related to density. Atmospheric general circulation models add equations
 of radiative transfer to the dynamic core, and some physical
 parametrizations for subgrid details.
 
+We will first examine the atmosphere as a fluid. Since the atmosphere is
+``so shallow'' and ``so slow'', we can make various approximations to
+the Navier-Stokes equations to make it easier to solve.
+But we will have six unknowns (the velocity vector of the atmosphere,
+its density, pressure, and temperature) and only four equations from
+fluid mechanics alone.
+
+Fortunately, the atmosphere is amazingly close to an ideal gas. So we
+can draw upon a rich thermodynamical well. This will be done in the
+second section.
+
+We can add more realism to our model than ``just atmosphere''. Doing so
+requires care when structuring the code. The usual architecture has a
+separate module for each model component, which interact with each other
+via a ``coupler'' pattern --- a specific maestro which coordinates the
+time-stepping.
+
+Some discussion of radiative transfer will be given, where sunlight and
+heat emitted from the Earth affect atmospheric temperatures. This is
+where more than 90\% of CPU cycles are spent in climate models.
+
+\section{Fluid Mechanics of Atmosphere}
+
 \subsection{Navier-Stokes Equations}
 
 The conservation of momenta amounts to Newton's second Law
@@ -240,7 +263,7 @@ $vw/r$. This approximation is largely independent of the shallow fluid
 and hydrostatic approximations, and may be empirically justified by
 examining the scale of the various terms.
 
-\begin{prop}
+\begin{prop}[Momentum Equations]
 Taking all three approximations gives us the conservation of momentum equations:
 \begin{subequations}
   \begin{align}
@@ -273,7 +296,7 @@ to simplify calculations. Empirically, $\Omega=7.2921150\times10^{-5}\,\mathrm{r
 \end{defn}
 
 
-\begin{prop}
+\begin{prop}[Continuity Equation]
 The mass conservation equation for a shallow atmosphere becomes
 \begin{equation}
   \frac{\partial\rho}{\partial t}
@@ -296,7 +319,7 @@ or equivalently
 \end{equation}
 \end{prop}
 
-\subsection{Thermodynamics for Atmospheric Fluid}
+\section{Thermodynamics for Atmospheric Fluid}
 We need some way to relate density to pressure, which requires
 thermodynamics. Atmosphere is approximately an ideal gas, so we could
 use
