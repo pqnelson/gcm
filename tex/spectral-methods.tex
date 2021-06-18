@@ -1,0 +1,12 @@
+\chapter{Spectral Methods}
+
+Following Durran~\cite{durran2010numerical}, we will discuss spectral
+methods to solve differential equations. The intuition guiding these
+methods should be thinking of a truncated Fourier series
+\begin{equation}
+  \phi_{N}(x) = \sum^{N}_{k=-N}c_{k}\E^{\I kx}
+\end{equation}
+then trying to find the coefficients $c_{k}$ such that they minimize
+some error, or satisfy some system of equations. More generally, instead
+of working with the basis functions $\exp(\I kx)$ we could use some
+other basis: this is what spectral methods study.

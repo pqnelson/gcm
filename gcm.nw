@@ -21,6 +21,7 @@
 @
 \appendix
 \include{tex/style-guide}
+\include{tex/spectral-methods}
 \backmatter
 \nocite{*}
 \bibliographystyle{siam}
