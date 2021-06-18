@@ -42,7 +42,9 @@ and other languages picked it up. Given the choice for doing what is
 logical or what is conventional, we follow the programmer's creed and
 adhere to the principle of least surprise [i.e., convention].}). The
 report failure subroutine simply reports the failure, and stops the
-program.
+program. This code may be found in Victor Eijkhout's
+\emph{Introduction to High-Performance Scientific Computing}\footnote{\S28.1.1.2 of \url{https://pages.tacc.utexas.edu/~eijkhout/istc/istc.html}},
+which in turn borrows Robert Mclay's code.
 
 <<[[utils]] Functions>>=
 <<Define macro to parse [[arg]] as string>>
