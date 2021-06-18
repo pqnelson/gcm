@@ -22,6 +22,36 @@ module scalar_field_class
   implicit none
 
   private
+  <<[[scalar_field]] type declarations>>
+
+  <<[[scalar_field]] public exports>>
+  contains
+  <<[[scalar_field]] functions>>
+end module scalar_field_class
+
+@ We have a couple declarations, namely the [[scalar_field]] type and
+the public interface to its constructor. The data type encodes different
+information depending on the numerical scheme we choose to deploy. For
+example, finite difference schemes will treat a scalar field as a finite
+(but large) vector, whereas spectral methods require encoding the scalar
+field as a list of coefficients to some family of orthogonal functions.
+
+For simplicity, we are working with some finite difference scheme.
+
+\begin{rmk}
+  We should emphasize another design consideration: what about initial
+  values or boundary values? Ostensibly, we should have a constructor
+  for an initial value problem which ``initializes'' a field, and
+  another constructor for a boundary value problem which enforces the
+  boundary conditions. Care must be taken with the boundary value
+  problem, because if we encode the boundary conditions as a module
+  parameter (``static variable''), then we can't reuse the code for
+  additional fields. We should either have a pointer to some data type
+  encoding the boundary conditions, or make it a field in the
+  [[scalar_field]] directly.
+\end{rmk}
+
+<<[[scalar_field]] type declarations>>=
   type scalar_field
      private
      real(wp), allocatable, dimension(:) :: node
@@ -30,9 +60,6 @@ module scalar_field_class
      procedure :: field_size
      <<[[scalar_field]] arithmetic operator declarations>>
   end type scalar_field
-  contains
-  <<[[scalar_field]] functions>>
-end module scalar_field_class
 
 @ The scalar field has the basic operators defined: addition
 $(\varphi_{1}+\varphi_{2})(x) = \varphi_{1}(x) + \varphi_{2}(x)$, and so
@@ -49,6 +76,21 @@ on.
 
 \subsection{Constructor}
 
+@ The constructor is abstracted away as ``some procedure'' which is made
+public as the [[interface scalar_field]].
+
+<<[[scalar_field]] type declarations>>=
+  interface scalar_field
+    procedure constructor
+  end interface
+
+
+@ For completeness, we now mark public the interface.
+
+<<[[scalar_field]] public exports>>=
+  public :: scalar_field
+
+@
 \subsection{Accessor Functions}
 
 We can continue on to obtain the discrete approximation encoded by the
