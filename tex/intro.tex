@@ -438,6 +438,68 @@ Rouson and friends~\cite{rouson2011scientific,rouson2008grid}, and much
 hard earned experience, we will be encoding mathematical equations
 directly into the abstract data types.
 
+Recall\footnote{E.g., from Olver~\cite{olver2014introduction} chapter 1,
+section 1 [discussion under un-numbered section heading ``Classical
+  Solutions'']} that we impose a partial differential equation upon a
+domain. Taken together, a partial differential equation (or a system of
+differential equations), some choice of boundary values or initial data,
+and a specific domain form a \define{(Differential) Problem}.
+
+\begin{rmk}[Importance of Domain]
+Although this might seem pedantic, there's an important point here: a
+differential equation described using jet bundles \emph{necessarily} has
+a smooth bundle to describe the dependent variables and independent
+variables. The latter being described using a manifold (or some other
+``mostly smooth'' space). That is to say, we have $\pi\colon E\to B$ be
+a bundle, $B$ a $k$-dimensional manifold describing the independent
+variables. A system of differential equations is then an equalizer
+on the jet bundle $j^{r}E$, which has many possible solutions. We
+further need either initial data or boundary conditions to find a unique
+solution. The space $B$ is usually weakened to be Lipschitz (or
+something), and generically called a \emph{Domain}.
+\end{rmk}
+
+Given a differential problem, numerical analysts approximate it using
+any number of schemes (finite differences, finite element, spectral
+method, finite volume, etc.). This may require additional data --- a
+choice of mesh, basis functions, approximation of differential
+operators, and so on. Underlying all this lies a pre-existing implicit
+choice of domain and equation(s). We bundle this together into a
+\define{Problem} data structure\footnote{Unfortunately, the term
+``class'' is overloaded in mathematics, and ambiguous in numerical
+analysis as possibly referring to one of its meanings in mathematics
+\emph{or possibly} its meaning in object-oriented programming. I'm going
+to use the less ambiguous phrase ``data structure'' when possible for
+clarity.}.
+
+We abstract away the notion of mathematical functions as \define{Field}
+objects (appealing to our physics intuition of a physical field). Since
+these are approximations to the underlying mathematical gadget, we need
+to specify its implementation of numerical schemes. Arguably, each
+scheme requires different data (finite difference schemes encode a field
+as a vector, finite element methods encode a field as a tuple of
+coefficients on each ``element'', spectral methods require just a vector
+of coefficients, and so on) and different algorithms for differentiation.
+Consequently, the constructor of a field requires a problem object.
+
+There are five or six fields in our equations:
+\begin{itemize}
+\item 3 from the components of the velocity vector field $\vec{u}$
+\item 1 from the pressure $p$
+\item 1 from the density $\rho$
+\item possibly 1 from the temperature $T$.
+\end{itemize}
+For the atmosphere, we have a compressible fluid, and we can derive
+equations:
+\begin{itemize}
+\item 3 equations from the conservation of momentum (involving
+  $\vec{u}$, $p$, $\rho$)
+\item 1 equation from the conservation of mass (involving $\vec{u}$, $\rho$)
+\item 1 equation from the ideal gas law (involving $T$, $\rho$, $p$)
+\item 1 equation from the first law of thermodynamics (involving $T$,
+  $\vec{u}$, $p$, $\rho$).
+\end{itemize}
+
 % There are a lot of people observing sin(x) is inaccurate on Intel CPUs
 % - https://hackernoon.com/help-my-sin-is-slow-and-my-fpu-is-inaccurate-a2c751106102
 % - https://randomascii.wordpress.com/2014/10/09/intel-underestimates-error-bounds-by-1-3-quintillion/

@@ -1,5 +1,15 @@
 \chapter{Utility Functions}
 
+\begin{ddanger}
+Most of this code you \emph{do not need to know}. The only possible
+exception may be that we abstract away the ``working precision'' in the
+[[wp]] parameter. If you want to work with single-precision or
+quad-precision floating point, then change that parameter to [[real32]]
+or [[real128]] (respectively). You have been warned! I will not stop you
+from reading this chapter, but the more interesting bits lie in the
+chapters ahead.
+\end{ddanger}
+
 There are a number of utilities useful for modern programming practice
 which \FORTRAN/ does not provide. We collect them into a module.
 

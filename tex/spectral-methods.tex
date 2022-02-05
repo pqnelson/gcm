@@ -10,3 +10,41 @@ then trying to find the coefficients $c_{k}$ such that they minimize
 some error, or satisfy some system of equations. More generally, instead
 of working with the basis functions $\exp(\I kx)$ we could use some
 other basis: this is what spectral methods study.
+
+When studying a differential equation of the form
+\begin{equation}
+\frac{\partial\psi}{\partial t} + F(\psi) = 0
+\end{equation}
+we take the truncated series expansion
+\begin{equation}
+  \psi = \sum^{N}_{k=1}a_{k}(t)\varphi_{k}(x)
+\end{equation}
+where $\varphi$ are some family of known functions or polynomials. Note
+the arguments of the coefficients and basis functions. The
+residual would be
+\begin{equation}
+  R(\psi) = \frac{\partial\psi}{\partial t} + F(\psi).
+\end{equation}
+How do we determine the coefficients $a_{k}(t)$?
+
+One strategy seeks to minimize the residual.
+We seek the coefficients such that
+\begin{equation}
+  \|R(\psi)\|_{2}^{2} = \int|R(\psi(x))|^{2}\,\D x
+\end{equation}
+is minimized. This is one strategy.
+
+A second competing strategy, called \define{Collocation}, requires the
+residual to be zero at a discrete set of grid points:
+\begin{equation}
+  R(\psi(j\Delta x)) = 0\quad\mbox{for all }j=1,\dots,N.
+\end{equation}
+
+The third strategy, called the \define{Galerkin approximation},
+requires the residual be orthogonal to each of the expansion functions
+\begin{equation}
+  \langle R, \varphi_{k}\rangle = \int R(\psi(x))\varphi_{k}(x)\,\D x = 0
+\end{equation}
+for each $k=1,\dots, N$.
+
+\section{Spherical Harmonics}

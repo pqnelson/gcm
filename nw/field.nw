@@ -7,6 +7,25 @@ stress tensor is a rank-two tensor. Our class hierarchy will have an
 abstract [[field]] class, extended as one of three: [[scalar_field]],
 [[vector_field]], or [[tensor_field]] for rank-2 tensors.
 
+Care must be taken, since we're effectively considering fields on the
+domain
+\begin{equation}
+  \mathcal{D} = S^{2}\times I^\circ
+\end{equation}
+where $I^\circ=(0,1)$ is the open unit interval, and $S^{2}$ is the 2-sphere.
+There are several approaches to numerical schemes, and the [[field]]
+data structure depends on the choice of scheme:
+\begin{enumerate}
+\item Finite difference schemes: the [[field]] is a vector of values on
+  the mesh;
+\item Spectral methods: the [[field]] consists of the coefficients to a
+  given family of basis functions;
+\item Finite volume methods: like finite difference schemes, the
+  [[field]] is a vector of values --- but some finite volume schemes
+  have the [[field]] be described as a linear function on each cell, so
+  the [[field]] has 6 values per cell (3 for the slope, 3 for the intercept).
+\end{enumerate}
+
 \section{Scalar Fields}
 
 Scalar fields are one of the two important abstractions for climate

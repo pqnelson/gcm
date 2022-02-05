@@ -1,4 +1,5 @@
-\documentclass[oneside]{book}
+% \documentclass[oneside]{book}
+\documentclass[oneside]{amsbook}
 \title{General Circulation Model}
 \author{Alex Nelson}
 \date{June 4, 2021}
@@ -16,9 +17,11 @@
 
 \mainmatter
 \include{tex/intro}
+\part{Scaffolding and Tools}
 \include{tex/utils}
 \include{tex/field}
 @
+\part*{Appendices}
 \appendix
 \include{tex/style-guide}
 \include{tex/spectral-methods}

@@ -1,24 +1,54 @@
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
 \ProvidesPackage{gcmmac}[2021/06/05 GCM Macros Package]
-
+\RequirePackage{manfnt}
 \RequirePackage{epigraph}
 \RequirePackage{marginnote}
 \RequirePackage{siunitx}
 \RequirePackage{noweb}
-\RequirePackage[inner=5.67pc,outer=11.33pc,marginpar=10pc]{geometry}
+% textwidth = 30pc seems good, ams* doc classes use this parameter.
+\RequirePackage[inner=5.67pc,outer=14.33pc,marginpar=13pc]{geometry}
+%% \RequirePackage[inner=5.67pc,outer=11.33pc,marginpar=10pc]{geometry}
 \RequirePackage{amssymb,amsmath}
 \RequirePackage{amsthm}
 \RequirePackage{bm}
-\RequirePackage[nottoc,notlot,notlof]{tocbibind}
+% \RequirePackage[nottoc,notlot,notlof]{tocbibind}
 \RequirePackage[hidelinks]{hyperref}
 
-\noweboptions{english}
+\numberwithin{equation}{chapter}
 
+%% Noweb customization
+\noweboptions{english,longxref}
+\let\nwnotused\@gobble % don't tell me about root chunks!
+
+%\renewcommand\nwendcode{\vskip-0.1in\noindent\hskip-\codemargin\rule{2cm}{0.4pt}\endtrivlist\endgroup}
+%\let\nwdocspar=\smallbreak
+
+% adjust whitespace between code chunks
+% https://www.cs.tufts.edu/~nr/noweb/FAQ.html
+%% \def\nwendcode{\endtrivlist \endgroup \vfil\penalty10\vfilneg}
+%% \let\nwdocspar=\smallbreak
+\def\nwendcode{\endtrivlist \endgroup}
+\let\nwdocspar=\par
+
+%% Marginalia
 \def\marginpar#1{\marginnote{\footnotesize\em #1}}
 
-% theorems
+%% Dangerous bend environments
+% Danger, Will Robinson!
+\newenvironment{danger}{\medbreak\noindent\hangindent=2pc\hangafter=-2%
+  \clubpenalty=10000%
+  \hbox to0pt{\hskip-\hangindent\dbend\hfill}\small\ignorespaces}%
+  {\medbreak\par}
+
+% Danger! Danger!
+\newenvironment{ddanger}{\medbreak\noindent\hangindent=3pc\hangafter=-2%
+  \clubpenalty=10000%
+  \hbox to0pt{\hskip-\hangindent\dbend\kern2pt\dbend\hfill}\small\ignorespaces}%
+  {\medbreak\par}
+
+%% theorems
 \theoremstyle{plain}
-\newtheorem{thm}{Theorem}[section]
+\newtheorem{thm}{Theorem}[chapter]
 \newtheorem{cor}[thm]{Corollary}
 \newtheorem{prop}[thm]{Proposition}
 \newtheorem{lemma}[thm]{Lemma}
@@ -30,12 +60,6 @@
 \theoremstyle{remark}
 \newtheorem{rmk}[thm]{Remark}
 \newtheorem{note}[thm]{Note}
-
-% adjust whitespace between code chunks
-% https://www.cs.tufts.edu/~nr/noweb/FAQ.html
-\def\nwendcode{\endtrivlist \endgroup \vfil\penalty10\vfilneg}
-\let\nwdocspar=\smallbreak
-
 
 % avoid making the page numbers reset in mainmatter
 % https://tex.stackexchange.com/a/61473/14751
@@ -64,11 +88,8 @@
 
 
 
-\renewcommand\nwendcode{\vskip-0.1in\noindent\hskip-\codemargin\rule{2cm}{0.4pt}\endtrivlist\endgroup}
-\let\nwdocspar=\smallbreak
-
-
 \def\define#1{\textbf{``#1''}}
-
+% center of mass 6, 138, 159, 177
+% --- frame 162--164
+% --- eom, 159, 178, 218
 \endinput
-
