@@ -13,9 +13,8 @@
 \RequirePackage[inner=5.67pc,outer=14.33pc,marginpar=13pc]{geometry}
 %% \RequirePackage[inner=5.67pc,outer=11.33pc,marginpar=10pc]{geometry}
 \RequirePackage{amssymb,amsmath}
-%% \RequirePackage{amsthm}
 \RequirePackage{bm}
-\RequirePackage[nottoc,notlot,notlof]{tocbibind}
+%\RequirePackage[nottoc]{tocbibind}
 \usepackage[dvipsnames]{xcolor}
 \RequirePackage{hyperref}
 
@@ -62,21 +61,6 @@
   \clubpenalty=10000%
   \hbox to0pt{\hskip-\hangindent\dbend\kern2pt\dbend\hfill}\small\ignorespaces}%
   {\medbreak\par}
-
-%% theorems
-\theoremstyle{plain}
-\newtheorem{thm}{Theorem}[chapter]
-\newtheorem{cor}[thm]{Corollary}
-\newtheorem{prop}[thm]{Proposition}
-\newtheorem{lemma}[thm]{Lemma}
-
-%% \theoremstyle{definition}
-%% \newtheorem{defn}[thm]{Definition}
-%% \newtheorem{ex}[thm]{Example}
-
-%% \theoremstyle{remark}
-%% \newtheorem{rmk}[thm]{Remark}
-%% \newtheorem{note}[thm]{Note}
 
 % avoid making the page numbers reset in mainmatter
 % https://tex.stackexchange.com/a/61473/14751

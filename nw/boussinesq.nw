@@ -331,8 +331,8 @@ nodes as adjacent:
 \begin{center}
 \includegraphics{img/boussinesq-grid-1.mps}
 \end{center}
-This tells us to identify $u_{\lambda,N+1}=u_{N+\lambda-1,N}$ for the
-North pole, and $u_{\lambda,0}=u_{N+\lambda-1,1}$ for the South pole.
+This tells us to identify $u_{\lambda,N+1}=u_{N-(\lambda-1),N}$ for the
+North pole, and $u_{\lambda,0}=u_{N-(\lambda-1),1}$ for the South pole.
 
 <<Derivative with respect to $\theta$>>=
 pure function diff_theta(field)

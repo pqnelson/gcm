@@ -1,5 +1,4 @@
-% \documentclass[oneside]{book}
-\documentclass[oneside]{amsbook}
+\documentclass[oneside]{book}
 \title{General Circulation Model}
 \author{Alex Nelson}
 \date{June 4, 2021}
