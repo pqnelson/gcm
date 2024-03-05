@@ -6,3 +6,6 @@
 *.out
 *.toc
 *.pdf
+img/*.mps
+img/*.mpx
+img/*.0
