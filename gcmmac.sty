@@ -14,7 +14,7 @@
 %% \RequirePackage[inner=5.67pc,outer=11.33pc,marginpar=10pc]{geometry}
 \RequirePackage{amssymb,amsmath}
 \RequirePackage{bm}
-%\RequirePackage[nottoc]{tocbibind}
+\RequirePackage{tocbibind}
 \usepackage[dvipsnames]{xcolor}
 \RequirePackage{hyperref}
 
@@ -68,6 +68,20 @@
   %\global\c@page \@ne
   \gdef\thepage{\csname @#1\endcsname
    \c@page}}
+
+% For the regular book class, don't start counting at page zero...
+\renewenvironment{titlepage}
+    {%
+      \cleardoublepage
+      \if@twocolumn
+        \@restonecoltrue\onecolumn
+      \else
+        \@restonecolfalse\newpage
+      \fi
+      \thispagestyle{empty}%
+    }%
+    {\if@restonecol\twocolumn \else \newpage \fi
+    }
 
 %%% Notation and logos
 % programming languages

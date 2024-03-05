@@ -10,7 +10,7 @@
 % git rev-list HEAD --count
 \begin{document}
 \frontmatter
-\maketitle\setcounter{page}{2}
+\maketitle
 \tableofcontents
 \include{tex/preface}
 
