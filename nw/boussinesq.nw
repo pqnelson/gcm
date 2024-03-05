@@ -1,0 +1,356 @@
+\chapter{Simple Boussinesq Equations}
+
+\section{Simple Boussinesq Equations}
+
+If the density variations are small, then we can employ the
+\emph{Boussinesq equations}. We write
+\begin{equation}
+\rho = \rho_{0}+\delta\rho(x,y,z,t)
+\end{equation}
+where $\rho_{0}$ is the reference density, and $|\delta\rho|\ll|\rho_{0}|$.
+
+Similarly, we find it often the case that the pressure is in hydrostatic
+balance with the reference density. That is to say, we have
+\begin{equation}
+p = p_{0}(z) + \delta p(x,y,z,t),
+\end{equation}
+where $|\delta p|\ll p_{0}$ and
+\begin{equation}
+\frac{\D p_{0}}{\D z} = -g\rho_{0}.
+\end{equation}
+
+\subsection{Momentum equations}
+
+We have $\rho=\rho_{0}+\delta\rho$ substituted into the momentum
+equations, giving us:
+\begin{equation}
+(\rho_{0}+\delta\rho)\left(\frac{\materialD\vec{v}}{\materialD t}+2\vec{\Omega}\times\vec{v}\right)
+=-\grad(\delta p) - \frac{\partial p_{0}}{\partial
+  z}\vec{k}-g(\rho_{0}+\delta\rho)\vec{k}.
+\end{equation}
+The hydrostatic balance of reference pressure with reference desnity
+simplifies the right-hand side to:
+\begin{equation}
+(\rho_{0}+\delta\rho)\left(\frac{\materialD\vec{v}}{\materialD t}+2\vec{\Omega}\times\vec{v}\right)
+=-\grad(\delta p) - g(\rho_{0}+\delta\rho)\vec{k}.
+\end{equation}
+Since $\delta\rho/\rho_{0}\ll1$, we may simplify things to:
+\begin{equation}\label{eq:boussinesq:momentum}
+\boxed{\frac{\materialD\vec{v}}{\materialD t}+2\vec{\Omega}\times\vec{v}
+=-\grad\phi + b\vec{k}}
+\end{equation}
+where $\phi=\delta p/\rho_{0}$, and $b=-g\,\variation\rho/\rho_{0}$ is
+the buoyancy.
+
+\subsection{Mass continuity}
+The mass continuity equation is exactly
+\begin{equation}
+\frac{\materialD(\variation\rho)}{\materialD t}
++ (\rho_{0}+\variation\rho)\grad\cdot\vec{v} = 0.
+\end{equation}
+If $\materialD/\materialD t$ scales in the same was as
+$\vec{v}\cdot\grad$ (``the time scales advectively''), then we can
+approximate this equation by
+\begin{equation}\label{eq:boussinesq:mass-continuity}
+\boxed{\grad\cdot\vec{v}=0.}
+\end{equation}
+
+\subsection{Thermodynamics}
+Depending on how much work we want to do, we can use different
+approximations for thermodynamic contributions. The thermodynamic
+equation of interest is
+\begin{equation}
+\frac{\materialD\rho}{\materialD t} -
+\frac{1}{c_{s}^{2}}\frac{\materialD p}{\materialD t}
+=\frac{\dot{Q}}{(\partial\eta/\partial\rho)_{p}T}\approx\dot{Q}\left(\frac{\rho_{0}\beta_{T}}{c_{p}}\right),
+\end{equation}
+where we used $(\partial\eta/\partial\rho)_{p}=(\partial\eta/\partial T)_{p}(\partial T/\partial\rho)_{p}\approx-c_{p}/(T\rho_{0}\beta_{T})$.
+Now we can use the approximations to rewrite the left-hand side as
+\begin{equation}
+\frac{\materialD\,\variation\rho}{\materialD t} -
+\frac{1}{c_{s}^{2}}\frac{\materialD p_{0}}{\materialD t}
+=\dot{Q}\left(\frac{\rho_{0}\beta_{T}}{c_{p}}\right),
+\end{equation}
+or taking advantage of the hydrostatic balance of reference pressure and
+density,
+\begin{equation}
+\frac{\materialD}{\materialD t} -
+\left(\variation\rho+\frac{\rho_{0}g}{c_{s}^{2}}z\right)
+=-\dot{Q}\left(\frac{\rho_{0}\beta_{T}}{c_{p}}\right).
+\end{equation}
+But the left-hand side is just the potential density. The roughest
+approximation to this neglects the second term, and using
+$b=-g\,\variation\rho/\rho_{0}$, which gives us
+\begin{equation}
+\boxed{\frac{\materialD b}{\materialD t} = \dot{b},}
+\end{equation}
+where $\dot{b}=g\beta_{T}\dot{Q}/c_{p}$. Taken together with
+Eq~\eqref{eq:boussinesq:momentum} and Eq~\eqref{eq:boussinesq:mass-continuity},
+we obtain the \define{Simple Boussinesq Equations}.
+
+If there is no forcing or dissipation, and only a uniform gravitational
+field, we can simply use:
+\begin{equation}
+\frac{\materialD b}{\materialD t} = 0.
+\end{equation}
+
+\subsection{Simplified Model}
+The atmosphere really is quite shallow compared to the radius of the
+Earth. Let us try to model the atmosphere as a 2-dimensional fluid about
+a rotating sphere, using the simple Boussinesq equations. We would have
+\begin{subequations}
+\begin{align}
+\partial_{t}u+\frac{u}{a\cos(\theta)}\partial_{\lambda}u+\frac{v}{a}\partial_{\theta}u-2\Omega
+v\sin(\theta)-\frac{uv}{a}\tan(\theta) &= \frac{-1}{a\cos(\theta)}\partial_{\lambda}\phi\\
+\partial_{t}v+\frac{u}{a\cos(\theta)}\partial_{\lambda}v+\frac{v}{a}\partial_{\theta}v+2\Omega
+u\sin(\theta)+\frac{u^{2}}{a}\tan(\theta) &= \frac{-1}{a}\partial_{\theta}\phi\\
+\partial_{\lambda}u+\partial_{\theta}(v\cos(\theta)) &= 0.
+\end{align}
+\end{subequations}
+We will need some initial conditions for $u$, $v$, and $\phi=\variation p/\rho_{0}$.
+We also need some way to figure out the time-evolution for $\phi$, which
+we could simplify as
+\begin{equation}
+\frac{\materialD}{\materialD t}\phi=\partial_{t}\phi+\frac{u}{a\cos(\theta)}\partial_{\lambda}\phi+\frac{v}{a}\partial_{\theta}\phi=0.
+\end{equation}
+However, this is over-determined (4 equations but only 3 unknowns).
+
+Discarding the $\tan(\theta)$ terms in the momentum equations, and using
+the $\materialD\phi/\materialD t=0$ equation, we will work with:
+\begin{subequations}
+\begin{align}
+\partial_{t}u+\frac{u}{a\cos(\theta)}\partial_{\lambda}u+\frac{v}{a}\partial_{\theta}u-2\Omega v\sin(\theta) &= \frac{-1}{a\cos(\theta)}\partial_{\lambda}\phi\\
+\partial_{t}v+\frac{u}{a\cos(\theta)}\partial_{\lambda}v+\frac{v}{a}\partial_{\theta}v+2\Omega u\sin(\theta) &= \frac{-1}{a}\partial_{\theta}\phi\\
+\partial_{t}\phi+\frac{u}{a\cos(\theta)}\partial_{\lambda}\phi+\frac{v}{a}\partial_{\theta}\phi&= 0.
+\end{align}
+\end{subequations}
+
+\subsection{Truncated series expansion}
+Since we're working on the surface of a sphere, it's handy to work with
+a series expansion in terms of spherical harmonics
+$Y_{m,n}(\lambda,\mu)$ where $\mu=\sin(\theta)$. The full series
+expansion
+\begin{equation}
+f(t,\theta,\mu) = \sum^{\infty}_{m=-\infty}\sum^{\infty}_{n=|m|}f_{m,n}(t)Y_{m,n}(\theta,\mu)
+\end{equation}
+where the coefficients $f_{m,n}(t)$ are functions of time, would be
+truncated
+\begin{equation}
+f(t,\theta,\mu) \approx \sum^{M}_{m=-M}\sum^{N(m)}_{n=|m|}f_{m,n}(t)Y_{m,n}(\theta,\mu).
+\end{equation}
+Particularly useful are the triangular truncation $N(m)=M$ and the
+rhomboidal truncation $N(m)=|m|+M$. Then we would have a first-order
+system of nonlinear ordinary differential equations.
+
+
+\section{Implementing Finite Difference Scheme}
+
+We will discard Coriolis effect terms, and solve the simple Boussinesq
+equations using finite difference scheme.
+
+<<boussinesq.f90>>=
+program boussinesq
+  use iso_fortran_env
+  use utils
+  implicit none
+  <<[[boussinesq]] program parameters>>
+contains
+  <<[[boussinesq]] functions>>
+end program boussinesq
+@
+
+
+
+<<[[boussinesq]] program>>=
+<<[[boussinesq]] program parameters>>
+<<Initialize [[boussinesq]] parameters>>
+
+do i=1, num_steps
+   <<Main loop for [[boussinesq]]>>
+end do
+@
+
+\subsection{Main loop for Boussinesq equations}
+We will be using the forward Euler scheme for time-evolution, and
+centered differences for first-order derivatives with respect to
+$\theta$ and $\lambda$.
+
+<<Main loop for [[boussinesq]]>>=
+u_prev = u
+v_prev = v
+phi_prev = phi
+uc = mul_sec_theta(u_prev, d_theta)
+u = u_prev &
+     - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(u_prev)) &
+     + mult_fields(v_prev, diff_theta(u_prev)) &
+     + mul_sec_theta(diff_lambda(phi_prev), d_theta))
+v = v_prev &
+     - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(v_prev)) &
+     + mult_fields(v_prev, diff_theta(v_prev)) &
+     + mul_sec_theta(diff_theta(phi_prev), d_theta))
+phi = phi_prev &
+     - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(phi_prev)) &
+     + mult_fields(v_prev, diff_theta(phi_prev)))
+@ 
+
+\subsection{Initializing parameters}
+We will suppose we are working with a $32\times32$ matrix, so we compute
+$\Delta\theta$ and $\Delta\lambda$ once and for all.
+
+We will also assume the initial value of the velocities and $\phi$ are
+described by a Gaussian $\exp(-\alpha(\lambda^{2}+\theta^{2}))$ where
+the decay parameter $\alpha$ is $1/8$ for velocities and $1/4$ for $\phi$.
+
+<<Initialize [[boussinesq]] parameters>>=
+N = 32
+d_theta = pi/33.0_wp
+d_lambda = 2*pi/32.0_wp
+dt = 0.001_wp
+num_steps = 1000
+
+call set_gaussian(u, 0.125_wp)
+call set_gaussian(v, 0.125_wp)
+call set_gaussian(phi, 0.25_wp)
+@ 
+
+
+<<[[boussinesq]] program parameters>>=
+integer(int32) :: N, num_steps, i
+real(wp), dimension(32,32) :: u, u_prev, v, v_prev, phi, phi_prev, uc, &
+     u_t, u_lambda, u_theta, v_t, v_lambda, v_theta, & ! derivatives
+     phi_t, phi_lambda, phi_theta ! more derivatives
+real(wp) :: d_theta, d_lambda, dt
+@
+
+\section{Helper functions}
+
+<<[[boussinesq]] functions>>=
+
+<<Componentwise-multiplying fields>>
+
+<<Initialize fields to Gaussian values>>
+
+<<Secant of longitude>>
+
+<<Derivative with respect to $\lambda$>>
+
+<<Derivative with respect to $\theta$>>
+@
+
+\subsection{Componentwise-multiplication of fields}
+We will need to compute things like $u\partial_{\lambda}v$ and so on,
+which requires multiplying two fields together component-wise.
+
+<<Componentwise-multiplying fields>>=
+pure function mult_fields(lhs, rhs) result(ans)
+  real(wp), dimension(:,:), intent(in) :: lhs, rhs
+  real(wp) :: ans(size(lhs,dim=1),size(lhs,dim=2))
+  integer(int32) :: i, j, max_lambda, max_theta
+  max_lambda = size(lhs,dim=1)
+  max_theta = size(lhs,dim=2)
+  do concurrent(i = 1:max_lambda, j=1:max_theta)
+     ans(i,j) = lhs(i,j)*rhs(i,j)
+  end do
+end function mult_fields
+@ %def mult_fields
+
+\subsection{Initialize field values} We pick the Gaussian for the
+initial values of the fields.
+
+<<Initialize fields to Gaussian values>>=
+subroutine set_gaussian(field, decay)
+  real(wp), dimension(:,:), intent(in out) :: field
+  real(wp), intent(in) :: decay
+  integer(int32) :: i, j, max_lambda, max_theta
+  max_lambda = size(field,dim=1)
+  max_theta = size(field,dim=2)
+  do concurrent(i = 1:max_lambda, j=1:max_theta)
+     field(i,j) = exp(-decay*((i - max_lambda/2)**2 + (j - max_theta/2)**2))
+  end do
+end subroutine set_gaussian
+@ %def set_gaussian
+
+\subsection{Secant of longitude} We need to multiply fields by secant of
+longitude, i.e., divide by $\cos(\theta)$.
+
+<<Secant of longitude>>=
+<<Compute longitude>>
+
+pure function mul_sec_theta(field, d_theta) result(ans)
+  real(wp), dimension(:,:), intent(in) :: field
+  real(wp) :: ans(size(field, dim=1), size(field, dim=2))
+  real(wp), intent(in) :: d_theta
+  integer(int32) :: i
+  
+  do i=1,size(field,dim=2)
+    ans(:,i) = field(:,i)/cos(theta(i,d_theta))
+  end do
+end function mul_sec_theta
+@ %def mul_sec_theta
+
+\subsection{Computing theta} We need to convert between the index $k$
+and the longitude $\theta_{k} = k\,\Delta\theta = k\pi/(N+1)$.
+
+<<Compute longitude>>=
+pure function theta(n, d_theta)
+  integer(int32), intent(in) :: n
+  real(wp), intent(in) :: d_theta
+  real(wp) :: theta
+  ! assert(1 <= n <= N)
+  theta = (n*d_theta) - (0.5_wp)*pi
+end function theta
+@ 
+
+\subsection{Derivative with respect to latitude}
+Using centered difference for approximating the derivative with respect
+to $\lambda$, and periodicity for handling the derivatives at
+$\lambda_{n}$ for $n=1$ and $n=N$.
+
+<<Derivative with respect to $\lambda$>>=
+pure function diff_lambda(field)
+  real(wp), dimension(:,:), intent(in) :: field
+  real(wp) :: diff_lambda(size(field, dim=1), size(field, dim=2))
+  integer(int32) :: M
+  M = size(field, dim=1)
+  ! centered difference for periodic function
+  diff_lambda(2:M-1, :) = 0.5*(field(3:M, :)-field(1:M-2, :))
+  diff_lambda(M, :) = 0.5*(field(1, :) - field(M-1, :))
+  diff_lambda(1, :) = 0.5*(field(2, :) - field(M, :))
+end function diff_lambda
+@ %def diff_lambda
+
+\subsection{Grid}
+The grid will be formed using a rectangular array, then forming periodic
+boundary conditions in the latitude $\lambda$. This gives us a cylinder.
+
+We then close the top by identifying cell $\lambda=1$ with $\lambda=N$,
+$\lambda=2$ with $\lambda=N-1$, \dots, and $\lambda=\frac{1}{2}N$ with
+$\lambda=\frac{1}{2}N+1$. Basically, the intuition is at the ``North
+pole'' (or ``South pole'') we wrap the grid around and identify opposite
+nodes as adjacent:
+\begin{center}
+\includegraphics{img/boussinesq-grid-1.mps}
+\end{center}
+This tells us to identify $u_{\lambda,N+1}=u_{N+\lambda-1,N}$ for the
+North pole, and $u_{\lambda,0}=u_{N+\lambda-1,1}$ for the South pole.
+
+<<Derivative with respect to $\theta$>>=
+pure function diff_theta(field)
+  real(wp), dimension(:,:), intent(in) :: field
+  real(wp) :: diff_theta(size(field, dim=1), size(field, dim=2))
+  integer(int32) :: M, i
+  M = size(field, dim=2)
+  ! centered difference for periodic function
+  diff_theta(:, 2:M-1) = 0.5*(field(:, 3:M)-field(:, 1:M-2))
+  ! boundary conditions
+  do i=1,(M/2)
+     ! bottom
+     diff_theta(i,1) = 0.5*(field(i,2)-field(M-i+1,1))
+     diff_theta(M-i+1,1) = 0.5*(field(M-i+1,2)-field(i,1))
+     ! top
+     diff_theta(i,M) = 0.5*(field(M-i+1,M)-field(i,M-1))
+     diff_theta(i-i+1,M) = 0.5*(field(i,M)-field(i,M-1))
+  end do
+end function diff_theta
+@ %def diff_theta
+

@@ -1,5 +1,6 @@
 \chapter{Fortran Style}
 
+\section{Basic Rules}
 \begin{itemize}
 \item In each module, submodule, and programs, be sure to declare
   \verb|implicit none|. Subroutines, functions, types, etc., all
@@ -12,6 +13,11 @@
 \item Each statement gets its own line.
 \end{itemize}
 
+\subsection{Use Fortran 2018 Standard}
+The latest Fortran standard is Fortran 2018, though not every feature
+has been implemented among compilers.
+
+\subsection{Module Structure}
 Modules should have the following skeletal structure:
 \begin{verbatim}
 module my_mod_name
@@ -35,13 +41,33 @@ end module
 The \verb|private| clause will make everything private except those
 things explicitly appearing in the \verb|public| list.
 
+\subsubsection{Exception: Use utils}
+The exception to the rule of explicitly listing what's used from each
+imported module: the {\tt utils} module may be used ``as is''. That is,
+we can just write ``{\tt use utils}'' and be done.
+
 \section{Naming Conventions}
 
 \begin{itemize}
 \item Use snake case --- i.e., lower case letters, separated by
   underscores, like: \verb|speed_of_light|.
 \item Be concise, not cryptic.
+\item Use lowercase for all Fortran constructs ({\tt do}, {\tt function},
+  {\tt module}, etc.)
+\item File names end with ``.f90'' suffix, since we're using free-form
+  Fortran.\footnote{This \emph{does} matter for some compilers (e.g., DEC,
+  Intel, Compaq). For more about this, see Doctor Fortran's ``Source
+  Form Just Wants to be Free'' \url{https://stevelionel.com/drfortran/2013/01/11/doctor-fortran-in-source-form-just-wants-to-be-free/}}
 \end{itemize}
+
+\subsection{Module names}
+Module names should match the file names. For example, ``{\tt module integrator}''
+is contained in the file ``{\tt integrator.f90}''.
+
+\subsection{Object-Oriented Code}
+When creating an abstraction (a ``class''), the module name should be
+something like ``\verb#foo_class#'' and the class should be named just
+``\verb#foo#''.
 
 \section{Unit Testing}
 
@@ -49,3 +75,35 @@ There is an amazing lack of stand-alone unit testing libraries in
 \FORTRAN/: many depend on additional languages. The only exception
 appears to be Fortran-testanything\footnote{\url{https://github.com/dennisdjensen/fortran-testanything}}.
 
+\subsection{Fortran-TAP}
+The basic idea is to use the given test harness, which compiles to
+\verb|bin/runtests|, and pass it the test suites the harness should run.
+
+\subsubsection{Test Suite}
+Using this term loosely, it's a Fortran \verb|program| which is a
+sequence of assertions (usually ``\verb|call ok(<bool>)|'' or
+``\verb|call is(lhs,rhs)|''). Such suites begin with something like
+``\verb|call plan(<number of tests>)|''.
+
+A module ``\verb|src/my/module.f90|'' has a corresponding test suite ``\verb|test/my/module_tests.f90|''.
+
+Each test suite ``\verb|test/my/module_tests.f90|'' is compiled to a
+subprogram contained in ``\verb|bin/tests/my/module_tests|''.
+
+\subsubsection{Saving an Artifact}
+``Best practices'' of extreme programming takes a test report, treats it
+as an artifact, and saves it to a file. These artifacts are accumulated
+over time, to track the test coverage and failure rate (and so on).
+We can create a ``poor man's artifact'' by simply redirecting the test
+runner's output to a file.
+
+This would schematically look like (in Bash):
+``\verb|bin/runtests ... 2>&1 tee tests.log|''. This will redirect both
+output and error output into the file ``\verb|tests.log|'', \emph{and}
+print it out to the screen.
+
+Ostensibly, we could run
+``\verb#find bin/tests/ -printf "%p " | bin/runtests 2>&1 tee tests.log#'',
+possibly placing the artifacts in a subdirectory, possibly naming them
+by the datetime executed (e.g., ``\verb#... tee "$(date -u -In).log"#''
+to write to ``\verb#2021-08-09T18:25:07,332774508+00:00.log#'').

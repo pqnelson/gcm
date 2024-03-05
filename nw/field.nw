@@ -34,9 +34,9 @@ decision to restrict attention to real-valued scalar fields. For our
 purposes, double-precision floating point numbers approximate real
 numbers.
 
-<<scalar\_field\_class.f90>>=
+<<scalar-field-class.f90>>=
 module scalar_field_class
-  use iso_fortran_env, only: int32
+  use iso_fortran_env, only: int32, stderr => error_unit
   use utils
   implicit none
 
@@ -44,11 +44,13 @@ module scalar_field_class
   <<[[scalar_field]] type declarations>>
 
   <<[[scalar_field]] public exports>>
-  contains
+contains
   <<[[scalar_field]] functions>>
 end module scalar_field_class
 
-@ We have a couple declarations, namely the [[scalar_field]] type and
+@
+\subsection{Type Declaration}
+We have a couple declarations, namely the [[scalar_field]] type and
 the public interface to its constructor. The data type encodes different
 information depending on the numerical scheme we choose to deploy. For
 example, finite difference schemes will treat a scalar field as a finite
@@ -71,59 +73,185 @@ For simplicity, we are working with some finite difference scheme.
 \end{rmk}
 
 <<[[scalar_field]] type declarations>>=
-  type scalar_field
-     private
-     real(wp), allocatable, dimension(:) :: node
-   contains
-     procedure :: nodal_values
-     procedure :: field_size
-     <<[[scalar_field]] arithmetic operator declarations>>
-  end type scalar_field
+type scalar_field
+   private
+   character(:), allocatable :: name
+   integer(int32) :: dims(2)
+   real(wp), allocatable, dimension(:,:) :: values
+contains
+  procedure, private, pass(self) :: copy_metadata
+  procedure, public, pass(self) :: nodal_values
+  procedure, public, pass(self) :: field_size
+  <<[[scalar_field]] arithmetic operator declarations>>
+end type scalar_field
 
-@ The scalar field has the basic operators defined: addition
+@
+
+\subsection{Arithmetic Operators}
+The scalar field has the basic operators defined: addition
 $(\varphi_{1}+\varphi_{2})(x) = \varphi_{1}(x) + \varphi_{2}(x)$, and so
 on.
 
 <<[[scalar_field]] arithmetic operator declarations>>=
-     procedure, private :: product
-     generic            :: operator(*) => product
-     procedure, private :: ratio
-     generic            :: operator(/) => ratio
-     procedure, private :: add
-     generic            :: operator(+) => add
+procedure, private, pass(self) :: field_assign_field
+procedure, private, pass(self) :: field_assign_scalars
+procedure, private, pass(self) :: field_add_field
+procedure, private, pass(self) :: field_sub_field
+procedure, private, pass(self) :: field_mult_field
+
+generic :: operator(=) => field_assign_field, field_assign_scalars
+generic :: operator(+) => field_add_field
+generic :: operator(-) => field_sub_field
+generic :: operator(*) => field_mult_field
 @
 
-\subsection{Constructor}
+Assigning a field is used for updating the value.
 
-@ The constructor is abstracted away as ``some procedure'' which is made
+<<Assigning a [[scalar_field]] a new field value>>=
+subroutine field_assign_field(self, other)
+  class(scalar_field), intent(in out) :: self
+  class(scalar_field), intent(in) :: other
+  call copy_metadata(self, other)
+  self%values = other%values
+end subroutine field_assign_field
+@ %def field_assign_field
+
+<<Assigning a [[scalar_field]] a new value from scalar approximations>>=
+subroutine field_assign_scalars(self, scalars)
+  class(scalar_field), intent(in out) :: self
+  real(dp), intent(in) :: scalars(self%dim(1), self%dim(2))
+  self%values = scalars
+end subroutine field_assign_scalars
+@ %def field_assign_field
+
+
+Adding two fields together should yield a \emph{new} field.
+
+<<Adding two [[scalar_field]] instances>>=
+pure type(scalar_field) function field_add_field(self, other) result(res)
+  class(scalar_field), intent(in) :: self, other
+  call copy_metadata(res, self)
+  res % values = self % values + other % values
+end function field_add_field
+@ %def field_add_field
+
+<<Subtracting two [[scalar_field]] instances>>=
+pure type(scalar_field) function field_sub_field(self, other) result(res)
+  class(scalar_field), intent(in) :: self, other
+  call copy_metadata(res, self)
+  res % values = self % values - other % values
+end function field_sub_field
+@ %def field_sub_field
+
+Component-wise multiplication of two fields, corresponding to what
+happens all the time in physics $\varphi(x)\psi(x)$.
+
+<<Multiplying two [[scalar_field]] instances>>=
+pure type(scalar_field) function field_mult_field(self, other) result(res)
+  class(scalar_field), intent(in) :: self, other
+  call copy_metadata(res, self)
+  res % values = self % values * other % values
+end function field_mult_field
+@ %def field_mult_field
+
+<<Copying metadata>>=
+subroutine copy_metadata(self, other)
+  self%name = other%name
+  self%dims = other%dims
+end subroutine copy_metadata
+@ %def copy_metadata
+
+We make accessible these subroutines and functions
+
+<<[[scalar_field]] functions>>=
+<<Copying metadata>>
+
+<<Assigning a [[scalar_field]] a new value from scalar approximations>>
+
+<<Assigning a [[scalar_field]] a new field value>>
+
+<<Adding two [[scalar_field]] instances>>
+
+<<Subtracting two [[scalar_field]] instances>>
+
+<<Multiplying two [[scalar_field]] instances>>
+
+@
+
+
+\subsection{Constructor}
+The constructor is abstracted away as ``some procedure'' which is made
 public as the [[interface scalar_field]].
 
 <<[[scalar_field]] type declarations>>=
-  interface scalar_field
-    procedure constructor
-  end interface
+interface scalar_field
+  module procedure :: new_scalar_field
+end interface
+@
 
-
-@ For completeness, we now mark public the interface.
+For completeness, we now mark public the interface.
 
 <<[[scalar_field]] public exports>>=
-  public :: scalar_field
+public :: scalar_field
+@
+
+The constructor's implementation is straightforward. Again, we're
+working with the assumption that we're working on a spherical grid.
+
+<<[[scalar_field]] constructor>>=
+type(scalar_field) function new_scalar_field(name, dims) result(self)
+  use iso_fortran_env, only: int32, stderr => error_unit
+  use utils
+  implicit none
+  character(*), intent(in) :: name
+  integer(int32), intent(in) :: dims(2)
+
+  <<Check if [[scalar_field]] constructor inputs are valid>>
+
+  self % name = name
+  self % dims = dims
+  
+  allocate(self % values(1:self%dims(1), 1:self % dims(2)))
+  self % values = 0
+end function new_scalar_field
+@ %def new_scalar_field
+
+We need to make sure the dimensions are positive.
+
+<<Check if [[scalar_field]] constructor inputs are valid>>=
+if (dims(1) <= 0) then
+   write (stderr, *) "scalar_field_constructor: Invalid dim(1) ", dims(1)
+   error stop
+end if
+
+if (dims(2) <= 0) then
+   write (stderr, *) "scalar_field_constructor: Invalid dim(2) ", dims(2)
+   error stop
+end if
+@
+
+We export this constructor.
+
+<<[[scalar_field]] functions>>=
+<<[[scalar_field]] constructor>>
 
 @
+
 \subsection{Accessor Functions}
 
 We can continue on to obtain the discrete approximation encoded by the
 scalar field, evaluated on the mesh points.
 
 <<[[scalar_field]] functions>>=
-  pure integer(int32) function field_size(this)
-    class(scalar_field), intent(in) :: this
-    field_size = size(this%node)
-  end function
+pure function field_size(this)
+  class(scalar_field), intent(in) :: this
+  integer(int32) :: field_size(2)
+  field_size = this%dims
+end function
 
-  pure function nodal_values(this)
-    class(scalar_field), intent(in) :: this
-    real(wp), allocatable, dimension(:) :: nodal_values
-    nodal_values = this%node
-  end function
+pure function nodal_values(this)
+  class(scalar_field), intent(in) :: this
+  real(wp), allocatable :: nodal_values
+  allocate(nodal_values(this%dims(1), this%dims(2)), source = this%values)
+end function
 @

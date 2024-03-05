@@ -4,6 +4,7 @@
 \author{Alex Nelson}
 \date{June 4, 2021}
 
+\usepackage{gcmsec}
 \usepackage{gcmmac}
 
 % To determine the number of commits done so far, use:
@@ -19,6 +20,7 @@
 \include{tex/intro}
 \part{Scaffolding and Tools}
 \include{tex/utils}
+\include{tex/boussinesq}
 \include{tex/field}
 @
 \part*{Appendices}

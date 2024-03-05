@@ -8,6 +8,10 @@ standard, and Fortran 90 resembles Pascal more than FORTAN 77. It's
 readable, performant, and everyone else uses it (so using another
 language would make reusing code convoluted).
 
+Right now, it focuses on a simple 1-layer atmosphere using the
+Bousinnesq approximation with no dissipation or forcing contributions,
+discarding the Coriolis effect.
+
 # Dependencies
 
 On Debian-based systems:
@@ -18,12 +22,27 @@ $ sudo apt-get install gfortran libcoarrays-dev libcoarrays
 
 # Directory Structure
 
+Right now, adhering to the
+[FPM](https://github.com/fortran-lang/fpm/blob/master/PACKAGING.md)
+packaging documentation, the current directory structure looks like:
+
 ```
-├───nw      (for noweb literate programs)
-├───src     (for extracted source code)
-├───test    (for unit tests)
-└───tex     (for extracted documentation)
+├── app
+│   └── main.f90 (the main program)
+├── bin          (for binary programs)
+│   └── tests    (for test suites)
+├───nw           (for noweb literate programs)
+├───obj          (for compiled object code)
+├───src          (for extracted source code)
+├───test         (for unit tests)
+└───tex          (for extracted documentation)
 ```
+
+**Remark.** This may change when/if we get to more complicated features. For
+example, it may be easier to carve out a "module" for the ocean system,
+and a "module" for the atmosphere. In this case, we would have a
+subdirectory in `./src/` for each subsystem (e.g., `./src/ocean/` and
+`./src/atmosphere/`, respectively). (End of Remark)
 
 # Code Conventions
 

@@ -226,7 +226,7 @@ Wittmann and friends~\cite{wittmann2015short} or more informally \url{https://la
 Such is the proportion of CPU latency (i.e., the time from the start of
 the instruction until the operation concludes).
 
-\subsection{Primitive Equations}
+\subsection{Primitive Equations}\label{subsec:intro:primitive-equations}
 
 There are three simplifications we could make: the shallow fluid
 approximation, the hydrostatic approximation, and the traditional
@@ -337,17 +337,16 @@ For a simple ideal gas, the heat capacity is constant, so
 \begin{equation}
   I = cT
 \end{equation}
-where $c$ is a constant and $I$ satisfies the fundamental thermodynamic
-relation
+where $c$ is a constant, and the internal energy of the fluid $I$
+satisfies the fundamental thermodynamic relation
 \begin{equation}
   \D I = T\,\D\eta - p\,\D\alpha + \mu\,\D S
 \end{equation}
-where $I$ is the internal energy of the fluid, $\alpha=1/\rho$ is the
-specific volume, $\eta$ is the specific entropy, $\mu$ is the chemical
-potential, and $S$ is the composition of the fluid in terms of
-``species'' of molecules. If $\dot{Q}$ is the heating applied to the
-fluid and $\dot{Q}_{E} = \dot{Q} + \mu\dot{S}$ is the total rate of
-energy change, then the internal energy equation
+where $\alpha=1/\rho$ is the specific volume, $\eta$ is the specific
+entropy, $\mu$ is the chemical potential, and $S$ is the composition of
+the fluid in terms of ``species'' of molecules. If $\dot{Q}$ is the
+heating applied to the fluid and $\dot{Q}_{E} = \dot{Q} + \mu\dot{S}$ is
+the total rate of energy change, then the internal energy equation
 \begin{equation}
   \frac{\materialD I}{\materialD t} + \frac{p}{\rho}\grad\cdot\vec{u} = \dot{Q}_{E}
 \end{equation}
@@ -430,7 +429,6 @@ This strategy may be found in Chandrasekhar's book
 \emph{Radiative Transfer} (1960) and refined over time.
 \end{note}
 
-
 \section{ADT Calculus}
 
 Following scientific programming tradition from SAGA\footnote{\url{https://www.ii.uib.no/saga/index.html}},
@@ -500,6 +498,25 @@ equations:
   $\vec{u}$, $p$, $\rho$).
 \end{itemize}
 
+Written in pseudocode, the goal is to have a ``{\tt field}'' data type
+equipped with the differential operators as functions. For example, we
+could have some code snippet like:
+
+\begin{Verbatim}
+field solve_heat_equation(number_of_steps, dt) =
+    field temperature;
+    initialize(temperature);
+    do i=0,number_of_steps 
+        temperature = integrate(temperature, dt)
+    return(temperature)
+
+// definition of integrate one time-step
+field integrate(temperature, dt) =
+    temperature = temperature + dt*diffusivity*laplacian(temperature)
+\end{Verbatim}
+\noindent%
+The code's intent is clear. 
+
 % There are a lot of people observing sin(x) is inaccurate on Intel CPUs
 % - https://hackernoon.com/help-my-sin-is-slow-and-my-fpu-is-inaccurate-a2c751106102
 % - https://randomascii.wordpress.com/2014/10/09/intel-underestimates-error-bounds-by-1-3-quintillion/
@@ -507,3 +524,42 @@ equations:
 %
 % Also see:
 % - https://latkin.org/blog/2014/11/09/a-simple-benchmark-of-various-math-operations/
+
+\subsection{Finite Difference Schemes}
+It is tempting to create a mesh by creating cells formed by discretizing
+the latitudes $\lambda_{i} = i\pi/M$ and longitudes $\theta_{j}=j2\pi/N$
+and create concentric spheres of radii $r_{k} = a + kh$ where
+$i=0,1,\dots,M$, $j=0,1,\dots,N-1$ and $k=0,\dots,K$ (say, $K = \lceil\SI{100}{\kilo\meter}/h\rceil$).
+But there is some freedom here not yet fixed: do we pick values of
+variables at the center of the cells? On the boundary of the cells? Where?
+
+The Arakawa--Lamb C grid (first introduced by Arakawa and Lamb~\cite{ARAKAWA1977173}), as depicted in
+figure~\ref{fig:intro:arakawa-lamb-c-grid}, is the most popular in
+practice. The atmospheric velocity vector components live on the center
+of the boundary faces of each cell, whereas other scalar physical
+quantities live at the center of each cell. We draw the cell bounded by
+heights $r_{k}$ and $r_{k+1}$, and latitudes $\lambda_{i-1}$ and $\lambda_{i}$.
+
+\begin{figure}[h]\label{fig:intro:arakawa-lamb-c-grid}
+  \centering
+  \includegraphics{img/arakawa-lamb-grid-0.mps}
+  \caption{Arakawa--Lamb C grid, cross-section with constant longitude;
+    the Earth is shaded in gray.}
+\end{figure}
+
+We can approximate the various derivatives using finite-difference
+schemes. For example,
+\begin{equation}
+\frac{\partial T}{\partial\lambda}\approx \frac{T_{i+1,j,k}-T_{i,j,k}}{\Delta\lambda}
+\end{equation}
+for the forward-difference approximation of the latitude derivative of
+temperature. This transforms the primitive equations (from subsection
+\ref{subsec:intro:primitive-equations}) into a system of equations which
+we can solve.
+
+\subsection{Finite Volume Methods}
+We should bear in mind that the volume of each cell varies with height,
+and that quantities which \emph{should} be conserved are
+\emph{not}. This motivates the finite volume method, which ensures
+conserved quantities are genguinely conserved.
+

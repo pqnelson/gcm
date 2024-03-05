@@ -1,6 +1,10 @@
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
 \ProvidesPackage{gcmmac}[2021/06/05 GCM Macros Package]
+
 \RequirePackage{manfnt}
+
+\RequirePackage{fancyvrb}
+\RequirePackage{graphicx}
 \RequirePackage{epigraph}
 \RequirePackage{marginnote}
 \RequirePackage{siunitx}
@@ -9,10 +13,23 @@
 \RequirePackage[inner=5.67pc,outer=14.33pc,marginpar=13pc]{geometry}
 %% \RequirePackage[inner=5.67pc,outer=11.33pc,marginpar=10pc]{geometry}
 \RequirePackage{amssymb,amsmath}
-\RequirePackage{amsthm}
+%% \RequirePackage{amsthm}
 \RequirePackage{bm}
-% \RequirePackage[nottoc,notlot,notlof]{tocbibind}
-\RequirePackage[hidelinks]{hyperref}
+\RequirePackage[nottoc,notlot,notlof]{tocbibind}
+\usepackage[dvipsnames]{xcolor}
+\RequirePackage{hyperref}
+
+% eTeX uses this color for links, it's better than BrickRed imho
+\definecolor{linkRed}{cmyk}{0.28, 1, 1, 0.35}
+\hypersetup{colorlinks=true,
+    linkcolor=linkRed,
+    citecolor=linkRed,
+    filecolor=linkRed,
+    urlcolor=linkRed,
+    breaklinks
+}
+
+\sisetup{parse-numbers = false}
 
 \numberwithin{equation}{chapter}
 
@@ -53,13 +70,13 @@
 \newtheorem{prop}[thm]{Proposition}
 \newtheorem{lemma}[thm]{Lemma}
 
-\theoremstyle{definition}
-\newtheorem{defn}[thm]{Definition}
-\newtheorem{ex}[thm]{Example}
+%% \theoremstyle{definition}
+%% \newtheorem{defn}[thm]{Definition}
+%% \newtheorem{ex}[thm]{Example}
 
-\theoremstyle{remark}
-\newtheorem{rmk}[thm]{Remark}
-\newtheorem{note}[thm]{Note}
+%% \theoremstyle{remark}
+%% \newtheorem{rmk}[thm]{Remark}
+%% \newtheorem{note}[thm]{Note}
 
 % avoid making the page numbers reset in mainmatter
 % https://tex.stackexchange.com/a/61473/14751
@@ -85,8 +102,12 @@
 
 \newcommand\grad{\vec{\nabla}}
 \newcommand\curl{\vec{\nabla}\times}
+\let\variation\delta
 
 
+\def\@end@code@rule{\vskip-0.1in\noindent\hskip-\codemargin\rule{2cm}{0.4pt}}
+\renewcommand\nwendcode{\endtrivlist\endgroup}
+\let\nwdocspar=\smallbreak
 
 \def\define#1{\textbf{``#1''}}
 % center of mass 6, 138, 159, 177

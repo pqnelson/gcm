@@ -23,7 +23,10 @@ module utils
 end module utils
 @
 
-\noindent\ignorespaces%
+\section{Constants and Parameters}
+
+\subsection{Working Precision Parameter}
+
 The first parameter worth standardizing is the working precision. Some
 computers may handle quadrouple precision (i.e., 128-bit floating point
 arithmetic), others hand double precision (i.e., 64-bit floating-point),
@@ -36,7 +39,26 @@ that needs to change.
   integer, parameter :: wp = real64
 @
 
-\section{Assertions for Contracts}
+\subsection{Pi}
+We will need $\pi\approx 3.14159\dots$, since Fortran does not provide
+it.
+
+<<[[utils]] Parameters>>=
+real(wp), parameter :: pi = 3.14159265358979323846264338327950288_wp
+@ 
+
+\subsection{Earth's Radius}
+We can also declare Earth's radius in kilometers as a constant
+parameter. While we're at it, we can also define the inverse
+radius. Both are in kilometers.
+
+<<[[utils]] Parameters>>=
+real(wp), parameter :: earth_radius = 6366.1977236758134307553505349005744813783858_wp
+real(wp), parameter :: inv_earth_radius = 0.000157079632679489661923132169163975144_wp
+@ 
+
+\section{Functions and Subroutines}
+\subsection{Assertions for Contracts}
 
 For most production code, it's useful to document assumptions and
 requirements in terms of assertions. This has been a ``lightweight
@@ -56,10 +78,10 @@ program. This code may be found in Victor Eijkhout's
 \emph{Introduction to High-Performance Scientific Computing}\footnote{\S28.1.1.2 of \url{https://pages.tacc.utexas.edu/~eijkhout/istc/istc.html}},
 which in turn borrows Robert Mclay's code.
 
-<<[[utils]] Functions>>=
-<<Define macro to parse [[arg]] as string>>
-<<Define [[assert]] macro>>
+I'm going to keep plugging away at this, because it requires a bit more
+work and doesn't yield enough fruit immediately.
 
+<<[[utils]] Functions>>=
 subroutine assert_failed(file, line_number, test, msg)
   implicit none
   character(*), intent(in) :: file, test, msg

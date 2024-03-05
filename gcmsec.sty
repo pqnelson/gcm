@@ -1,0 +1,80 @@
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{gcmsec}[2021/06/05 GCM section formatting Package]
+
+% https://tex.stackexchange.com/q/140490/14751
+
+\RequirePackage{amsthm}
+\RequirePackage[explicit]{titlesec}
+\RequirePackage{ifmtarg}
+% \@startsection{name}{level}{indent}{beforeskip}{afterskip}{style}
+% amsart.cls has
+%% \def\subsection{\@startsection{subsection}{2}%
+%%   \z@{.5\linespacing\@plus.7\linespacing}{-.5em}%
+%%   {\normalfont\bfseries}}
+% medskipamount = .35\baselineskip plus.7\baselineskip
+\newdimen\linespacing
+\linespacing=\baselineskip
+
+% https://tex.stackexchange.com/a/53889/14751
+%\titleformat{\subsection}[runin]{\normalsize\bfseries}{\thesubsection\@addpunct{.}}{5pt}{}
+\newcommand\titleempty[1]{\@ifmtarg{#1}{}{#1\@addpunct{.}}}
+% \titleformat{〈command 〉}[〈shape〉]{〈format 〉}{〈label 〉}{〈sep〉}{〈before-code〉}[〈after-code〉]
+\titleformat{\subsection}[runin]% shape
+            {\normalsize\bfseries}% format
+            {\thesubsection\@addpunct{.}}% label
+            {.5em}% sep
+            {\titleempty{#1}}
+\titlespacing{\subsection}{0pt}{.5\linespacing\@plus.7\linespacing}{.5em}
+
+\titleformat{\subsubsection}[runin]% shape
+            {\normalsize\bfseries}% format
+            {\thesubsubsection\@addpunct{.}}% label
+            {.5em}% sep
+            {\titleempty{#1}}
+\titlespacing{\subsubsection}{0pt}{.5\linespacing\@plus.7\linespacing}{.5em}
+
+\titleformat{\paragraph}[runin]% shape
+            {\normalsize\bfseries}% format
+            {\theparagraph\@addpunct{.}}% label
+            {.5em}% sep
+            {\titleempty{#1}}
+\titlespacing{\paragraph}{0pt}{.5\linespacing\@plus.7\linespacing}{.5em}
+
+\titleformat{\subparagraph}[runin]% shape
+            {\normalsize\bfseries}% format
+            {\thesubparagraph\@addpunct{.}}% label
+            {.5em}% sep
+            {\titleempty{#1}}
+\titlespacing{\subparagraph}{0pt}{.5\linespacing\@plus.7\linespacing}{.5em}
+\setcounter{secnumdepth}{5}
+
+% modified from https://tex.stackexchange.com/a/140494/14751
+\def\thmhead#1#2#3{%
+  \thmnumber{\@upn{\bfseries#2\@addpunct{.}}\enspace\@ifnotempty{#1}{}}%
+  \thmname{#1}%
+  \thmnote{\enspace{\the\thm@notefont(#3)}}}
+
+% Amsthm documentation states (pg 8):
+%% The following list summarizes the types of structures which are normally
+%% associated with each theorem style.
+%% plain:
+%%     Theorem, Lemma, Corollary, Proposition, Conjecture, Criterion,
+%%     Assertion
+%% definition:
+%%     Definition, Condition, Problem, Example, Exercise, Algorithm,
+%%     Question, Axiom, Property, Assumption, Hypothesis
+%% remark:
+%%     Remark, Note, Notation, Claim, Summary, Acknowledgment, Case,
+%%     Conclusion
+\newtheorem{thm}[subsection]{Theorem}
+\newtheorem{prop}[subsection]{Proposition}
+\newtheorem{lemma}[subsection]{Lemma}
+\newtheorem{cor}[subsubsection]{Corollary}
+\theoremstyle{definition}
+\newtheorem{defn}[subsection]{Definition}
+\newtheorem{ex}[subsection]{Example}
+\theoremstyle{remark}
+\newtheorem{rmk}[subsubsection]{Remark}
+\newtheorem{note}[subsubsection]{Note}
+
+\endinput
