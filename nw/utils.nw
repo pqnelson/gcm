@@ -89,8 +89,8 @@ subroutine assert_failed(file, line_number, test, msg)
   print *, "Assert: ",trim(test)," Failed at ",trim(file),":",line_number
   print *, "Msg:", trim(msg)
   stop
-end subroutine assert
-@
+end subroutine assert_failed
+@ %def assert_failed
 
 \noindent\ignorespaces%
 The first macro worth considering simply stringifies

@@ -13,5 +13,5 @@ module utils
       print *, "Assert: ",trim(test)," Failed at ",trim(file),":",line_number
       print *, "Msg:", trim(msg)
       stop
-    end subroutine assert
+    end subroutine assert_failed
 end module utils

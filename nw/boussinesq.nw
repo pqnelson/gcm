@@ -142,6 +142,10 @@ Particularly useful are the triangular truncation $N(m)=M$ and the
 rhomboidal truncation $N(m)=|m|+M$. Then we would have a first-order
 system of nonlinear ordinary differential equations.
 
+This would be particularly useful, but it would require transforming the
+Boussinesq equations quite a bit before obtaining a system amenable to
+spectral methods. It would be a useful exercise to do so, and compare
+results from the finite difference scheme and the spectral method.
 
 \section{Implementing Finite Difference Scheme}
 
@@ -153,13 +157,16 @@ program boussinesq
   use iso_fortran_env
   use utils
   implicit none
-  <<[[boussinesq]] program parameters>>
+  <<[[boussinesq]] program>>
 contains
   <<[[boussinesq]] functions>>
 end program boussinesq
 @
 
-
+\subsection{Main Routine}
+The main routine for most numerical programs describing the
+time-evolution of a quantity boils down to initializing the parameters,
+then iteratively stepping through time.
 
 <<[[boussinesq]] program>>=
 <<[[boussinesq]] program parameters>>
@@ -181,21 +188,23 @@ v_prev = v
 phi_prev = phi
 uc = mul_sec_theta(u_prev, d_theta)
 u = u_prev &
-     - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(u_prev)) &
-     + mult_fields(v_prev, diff_theta(u_prev)) &
+     - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(u_prev)/d_lambda) &
+     + mult_fields(v_prev, diff_theta(u_prev)/d_theta) &
      + mul_sec_theta(diff_lambda(phi_prev), d_theta))
 v = v_prev &
-     - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(v_prev)) &
-     + mult_fields(v_prev, diff_theta(v_prev)) &
+     - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(v_prev)/d_lambda) &
+     + mult_fields(v_prev, diff_theta(v_prev)/d_theta) &
      + mul_sec_theta(diff_theta(phi_prev), d_theta))
 phi = phi_prev &
-     - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(phi_prev)) &
-     + mult_fields(v_prev, diff_theta(phi_prev)))
+     - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(phi_prev)/d_lambda) &
+     + mult_fields(v_prev, diff_theta(phi_prev)/d_theta))
 @ 
 
 \subsection{Initializing parameters}
 We will suppose we are working with a $32\times32$ matrix, so we compute
-$\Delta\theta$ and $\Delta\lambda$ once and for all.
+$\Delta\theta$ and $\Delta\lambda$ once and for all. For the choice of
+time-stepping, I'm going to pick $\Delta t=\sqrt{\Delta\lambda}\approx0.443113$
+as the time step.
 
 We will also assume the initial value of the velocities and $\phi$ are
 described by a Gaussian $\exp(-\alpha(\lambda^{2}+\theta^{2}))$ where
@@ -205,7 +214,7 @@ the decay parameter $\alpha$ is $1/8$ for velocities and $1/4$ for $\phi$.
 N = 32
 d_theta = pi/33.0_wp
 d_lambda = 2*pi/32.0_wp
-dt = 0.001_wp
+dt = sqrt(d_lambda)
 num_steps = 1000
 
 call set_gaussian(u, 0.125_wp)
@@ -213,12 +222,18 @@ call set_gaussian(v, 0.125_wp)
 call set_gaussian(phi, 0.25_wp)
 @ 
 
+\subsection{Declaration of parameters}
+We will also need to keep track of the previous values for the physical
+fields [[u_prev]], [[v_prev]], and [[phi_prev]], as well computing
+$u/\cos(\theta)$ which is stored as [[uc]].
+
+We store $\Delta\theta$, $\Delta\lambda$, and $\Delta t$ as [[d_theta]],
+[[d_lambda]], and [[dt]], respectively.
 
 <<[[boussinesq]] program parameters>>=
 integer(int32) :: N, num_steps, i
 real(wp), dimension(32,32) :: u, u_prev, v, v_prev, phi, phi_prev, uc, &
-     u_t, u_lambda, u_theta, v_t, v_lambda, v_theta, & ! derivatives
-     phi_t, phi_lambda, phi_theta ! more derivatives
+     u_lambda, u_theta, v_lambda, v_theta, phi_lambda, phi_theta
 real(wp) :: d_theta, d_lambda, dt
 @
 

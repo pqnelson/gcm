@@ -4,13 +4,12 @@ program boussinesq
   implicit none
   integer(int32) :: N, num_steps, i
   real(wp), dimension(32,32) :: u, u_prev, v, v_prev, phi, phi_prev, uc, &
-       u_t, u_lambda, u_theta, v_t, v_lambda, v_theta, & ! derivatives
-       phi_t, phi_lambda, phi_theta ! more derivatives
+       u_lambda, u_theta, v_lambda, v_theta, phi_lambda, phi_theta
   real(wp) :: d_theta, d_lambda, dt
   N = 32
   d_theta = pi/33.0_wp
   d_lambda = 2*pi/32.0_wp
-  dt = 0.001_wp
+  dt = sqrt(d_lambda) !0.001_wp
   num_steps = 1000
 
   call set_gaussian(u, 0.125_wp)
@@ -23,16 +22,16 @@ program boussinesq
      phi_prev = phi
      uc = mul_sec_theta(u_prev, d_theta)
      u = u_prev &
-          - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(u_prev)) &
-          + mult_fields(v_prev, diff_theta(u_prev)) &
-          + mul_sec_theta(diff_lambda(phi_prev), d_theta))
+          - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(u_prev))/d_lambda &
+          + mult_fields(v_prev, diff_theta(u_prev))/d_theta &
+          + mul_sec_theta(diff_lambda(phi_prev), d_theta)/d_lambda)
      v = v_prev &
-          - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(v_prev)) &
+          - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(v_prev)/d_lambda) &
           + mult_fields(v_prev, diff_theta(v_prev)) &
-          + mul_sec_theta(diff_theta(phi_prev), d_theta))
+          + mul_sec_theta(diff_theta(phi_prev)/d_theta, d_theta))
      phi = phi_prev &
-          - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(phi_prev)) &
-          + mult_fields(v_prev, diff_theta(phi_prev)))
+          - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(phi_prev)/d_lambda) &
+          + mult_fields(v_prev, diff_theta(phi_prev)/d_theta))
   end do
   print *, "u = ", u
 contains
