@@ -3,8 +3,7 @@ program boussinesq
   use utils
   implicit none
   integer(int32) :: N, num_steps, i
-  real(wp), dimension(32,32) :: u, u_prev, v, v_prev, phi, phi_prev, uc, &
-       u_lambda, u_theta, v_lambda, v_theta, phi_lambda, phi_theta
+  real(wp), dimension(32,32) :: u, u_prev, v, v_prev, phi, phi_prev, uc
   real(wp) :: d_theta, d_lambda, dt
   N = 32
   d_theta = pi/33.0_wp

@@ -235,8 +235,7 @@ We store $\Delta\theta$, $\Delta\lambda$, and $\Delta t$ as [[d_theta]],
 
 <<[[boussinesq]] program parameters>>=
 integer(int32) :: N, num_steps, i
-real(wp), dimension(32,32) :: u, u_prev, v, v_prev, phi, phi_prev, uc, &
-     u_lambda, u_theta, v_lambda, v_theta, phi_lambda, phi_theta
+real(wp), dimension(32,32) :: u, u_prev, v, v_prev, phi, phi_prev, uc
 real(wp) :: d_theta, d_lambda, dt
 @
 
@@ -372,3 +371,44 @@ pure function diff_theta(field)
 end function diff_theta
 @ %def diff_theta
 
+\section{Concluding Remarks}
+
+\subsection{Pole Problem}
+If you look at how we handled forming a grid for the Earth, we began
+with a square $N\times N$ grid, then imposed periodicity on the
+$x$-axis, and ``sutured'' the poles together. For $N=32$, this means
+along the equator we would have about $198.944$ kilometers be the width
+of a tile, whereas at the North or South poles we would have about
+$18.91$ kilometers be the width of a tile. This is an alarming
+difference in grid scale.
+
+Further, we specifically chose the $\theta$ spacing to avoid having
+$\theta=0$ and $\theta=\pi$ be part of the grid, because it would have
+caused numerical problems with the terms involving factors of $1/\sin(\theta)$.
+
+These related problems are known as the ``pole problem''. The way to
+address it is to work with a different grid, or a different numerical
+scheme (spectral methods would easily avoid this problem, i.e., using a
+truncated series expansion for our physical quantities).
+
+\subsection{Next steps}
+The first steps towards a realistic model would be to include the
+Coriolis terms and the metric terms.
+
+Adding multiple layers, and bringing back buoyancy $b$, would be the
+steps after that.
+
+But before we can do any of this, we should first create a ``field''
+abstraction for $u$, $v$, and $\phi$, and then we should focus more on
+the grid being used for approximating the Earth's surface.
+
+We could also take advantage ofthe Helmholtz decomposition of a vector
+field in 3-dimensions, namely that the velocity vector field $\vec{u}$
+may be written as
+\begin{equation}
+\vec{u}=\widehat{\vec{k}}\times\grad\psi + \grad\chi
+\end{equation}
+where $\psi$ is the streamfunction and $\chi$ is the velocity potential.
+This is how most climate models work, then we apply spectral methods to
+$\chi$ and $\psi$, and then relate them back to our vector field
+$\vec{u}$. 
