@@ -161,7 +161,8 @@ Only in Cartesian coordinates does it coincide with the familiar Laplacian.
     \begin{align}
       \frac{\materialD u}{\materialD t} -\left(2\Omega + \frac{u}{r\cos(\theta)}\right)(v\sin(\theta)-w\cos(\theta))
       &= \frac{-1}{\rho r\cos(\theta)}\frac{\partial p}{\partial\lambda}\\
-      \frac{\materialD v}{\materialD t} -\left(2\Omega + \frac{u}{r\cos(\theta)}\right)u\sin(\theta)
+      \frac{\materialD v}{\materialD t} +\left(2\Omega + \frac{u}{r\cos(\theta)}\right)u\sin(\theta)
+      + \frac{wv}{r}
       &= \frac{-1}{\rho r}\frac{\partial p}{\partial\theta} \\
       \frac{\materialD w}{\materialD t} - \frac{u^{2}+v^{2}}{r} -
       2\Omega u\cos(\theta)
@@ -271,7 +272,7 @@ Taking all three approximations gives us the conservation of momentum equations:
     - 2\Omega v\sin(\theta) - \frac{uv}{a}\tan(\theta)
     &= \frac{-1}{\rho a\cos(\theta)}\frac{\partial p}{\partial\lambda}\\
     \frac{\materialD v}{\materialD t}
-    - 2\Omega u\sin(\theta) - \frac{u^{2}\tan(\theta)}{a}
+    + 2\Omega u\sin(\theta) + \frac{u^{2}\tan(\theta)}{a}
     &= \frac{-1}{\rho a}\frac{\partial p}{\partial\theta} \\
     0 &= \frac{-1}{\rho}\frac{\partial p}{\partial z}-g.
   \end{align}
