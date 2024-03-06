@@ -1,6 +1,7 @@
-\chapter{Simple Boussinesq Equations}
+% -*- mode: poly-noweb; noweb-code-mode: f90-mode; -*-
+\chapter{Simple Boussinesq Equations}\label{ch:simple-boussinesq-equations}
 
-\section{Simple Boussinesq Equations}
+\section{Mathematical Model}
 
 If the density variations are small, then we can employ the
 \emph{Boussinesq equations}. We write

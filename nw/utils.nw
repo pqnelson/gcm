@@ -1,3 +1,4 @@
+% -*- mode: poly-noweb; noweb-code-mode: f90-mode; -*-
 \chapter{Utility Functions}
 
 \begin{ddanger}
@@ -41,10 +42,14 @@ that needs to change.
 
 \subsection{Pi}
 We will need $\pi\approx 3.14159\dots$, since Fortran does not provide
-it.
+it. Since 128-bit numbers have $\log_{10}(2^{113})\approx 34$
+significant figures, I'm going to play it safe and keep track 
+of $\pi$ to 38 digits. (If \FORTRAN/ ever supports 256-bit
+floating-point, then we'll need to extend this to
+$\log_{10}(2^{237})\approx 72$ digits.)
 
 <<[[utils]] Parameters>>=
-real(wp), parameter :: pi = 3.14159265358979323846264338327950288_wp
+real(wp), parameter :: pi = 3.1415926535897932384626433832795028842_wp
 @ 
 
 \subsection{Earth's Radius}

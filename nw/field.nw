@@ -1,3 +1,4 @@
+% -*- mode: poly-noweb; noweb-code-mode: f90-mode; -*-
 \chapter{Field Quantities}
 
 We have quantities of interest in our climate model be described by
