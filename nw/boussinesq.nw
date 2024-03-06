@@ -180,7 +180,9 @@ end do
 \subsection{Main loop for Boussinesq equations}
 We will be using the forward Euler scheme for time-evolution, and
 centered differences for first-order derivatives with respect to
-$\theta$ and $\lambda$.
+$\theta$ and $\lambda$. This reflects the equations we have derived, but
+it requires some thought to realize it. However, this is a ``first draft''
+which we hope to improve upon with the abstraction of a [[Field]] class.
 
 <<Main loop for [[boussinesq]]>>=
 u_prev = u
@@ -190,11 +192,11 @@ uc = mul_sec_theta(u_prev, d_theta)
 u = u_prev &
      - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(u_prev)/d_lambda) &
      + mult_fields(v_prev, diff_theta(u_prev)/d_theta) &
-     + mul_sec_theta(diff_lambda(phi_prev), d_theta))
+     + mul_sec_theta(diff_lambda(phi_prev)/d_lambda, d_theta))
 v = v_prev &
      - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(v_prev)/d_lambda) &
      + mult_fields(v_prev, diff_theta(v_prev)/d_theta) &
-     + mul_sec_theta(diff_theta(phi_prev), d_theta))
+     + mul_sec_theta(diff_theta(phi_prev)/d_theta, d_theta))
 phi = phi_prev &
      - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(phi_prev)/d_lambda) &
      + mult_fields(v_prev, diff_theta(phi_prev)/d_theta))
