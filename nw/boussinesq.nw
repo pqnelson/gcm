@@ -116,15 +116,63 @@ we could simplify as
 \end{equation}
 However, this is over-determined (4 equations but only 3 unknowns).
 
-Discarding the $\tan(\theta)$ terms in the momentum equations, and using
+Discarding the $\tan(\theta)$ terms in the momentum equations,
+discarding the Coriolis terms, and using
 the $\materialD\phi/\materialD t=0$ equation, we will work with:
 \begin{subequations}
 \begin{align}
-\partial_{t}u+\frac{u}{a\cos(\theta)}\partial_{\lambda}u+\frac{v}{a}\partial_{\theta}u-2\Omega v\sin(\theta) &= \frac{-1}{a\cos(\theta)}\partial_{\lambda}\phi\\
-\partial_{t}v+\frac{u}{a\cos(\theta)}\partial_{\lambda}v+\frac{v}{a}\partial_{\theta}v+2\Omega u\sin(\theta) &= \frac{-1}{a}\partial_{\theta}\phi\\
+\partial_{t}u+\frac{u}{a\cos(\theta)}\partial_{\lambda}u+\frac{v}{a}\partial_{\theta}u%-2\Omega v\sin(\theta)
+&= \frac{-1}{a\cos(\theta)}\partial_{\lambda}\phi\\
+\partial_{t}v+\frac{u}{a\cos(\theta)}\partial_{\lambda}v+\frac{v}{a}\partial_{\theta}v%+2\Omega u\sin(\theta)
+&= \frac{-1}{a}\partial_{\theta}\phi\\
 \partial_{t}\phi+\frac{u}{a\cos(\theta)}\partial_{\lambda}\phi+\frac{v}{a}\partial_{\theta}\phi&= 0.
 \end{align}
 \end{subequations}
+
+\subsection{Finite difference scheme}
+We're going to work with the simplest possible finite difference scheme
+imaginable, starting with $N\times N$ matrices and treating the first
+component as latitude, the second component as longitude. We impose
+periodicity on the latitude, so a matrix $a_{m,n}$ will have
+$a_{N+1,n}=a_{1,n}$. The pole requires greater care, but we will work
+with $N$ even and ``suture'' the pole closed. Conceptually, we will have
+$a_{\lambda,N+1}=a_{N-(\lambda-1),N}$, which is best gleaned from the
+illustration:
+\begin{center}
+\includegraphics{img/boussinesq-grid-1.mps}
+\end{center}
+We see that $a_{1,N+1}=a_{N,N}$, $a_{2,N+1}=a_{N-1,N}$,
+$a_{3,N+1}=a_{N-2,N}$ and so on. We will not have a grid point \emph{at}
+the North or South pole, we work with $\theta_{n}+\frac{1}{2}\pi=n\pi/(N+1)$
+for $n=1$, \dots, $N$.
+
+Now, when taking derivatives near the poles $\theta\approx\pm\pi/2$, the finite
+difference scheme is ``squeezed''. For example, let us work through
+computing the centered differences in latitude $\lambda$ at
+$\theta_{N}$, this would involve 
+\begin{equation}
+\frac{1}{a\cos(\theta_{N})}\partial_{\lambda}f\approx\frac{1}{a\cos(\theta_{N})}\frac{\Delta f}{\Delta \lambda}
+\end{equation}
+where, after some trig manipulations, we find
+\begin{equation}
+\cos(\theta_{N})=\cos\left(-\frac{\pi}{2}+\frac{N}{N+1}\pi\right)=\sin\left(\frac{N\pi}{1+N}\right).
+\end{equation}
+Actually, we can add and subtract by 1 to get
+\begin{equation}
+\sin\left(\frac{N\pi}{1+N}\right)=\sin\left(\frac{(N+1-1)\pi}{1+N}\right)=\sin\left(\frac{\pi}{1+N}\right).
+\end{equation}
+So we're dividing by a number very close to zero. For $N=32$, this would
+be $\sin(\pi/33)\approx0.095056$, and for $N=128$ we'd have
+$\sin(\pi/129)\approx0.024351$. So we would have
+\begin{equation}
+\frac{1}{a\cos(\theta_{N})}\partial_{\lambda}f\approx\frac{1}{a\sin(\pi/(N+1))}\frac{f(\lambda_{k}+\Delta\lambda)-f(\lambda_{k}-\Delta\lambda)}{2\Delta\lambda}
+-\frac{1}{a\sin(\pi/(N+1))}\frac{(\Delta\lambda)^{2}}{6}f'''(\xi)
+\end{equation}
+for some $\xi\in[\lambda_{k}-\Delta\lambda.\lambda_{k}+\Delta\lambda]$.
+
+Let us work through the finite differences for the equations to see if
+we risk numerical instability with our choices of $\Delta t$, $\Delta\lambda$,
+and $\Delta\theta$.
 
 \subsection{Truncated series expansion}
 Since we're working on the surface of a sphere, it's handy to work with
@@ -206,7 +254,7 @@ phi = phi_prev &
 \subsection{Initializing parameters}
 We will suppose we are working with a $32\times32$ matrix, so we compute
 $\Delta\theta$ and $\Delta\lambda$ once and for all. For the choice of
-time-stepping, I'm going to pick $\Delta t=\sqrt{\Delta\lambda}\approx0.443113$
+time-stepping, I'm going to pick $\Delta t=(\Delta\lambda)^{2}\approx0.0385531$
 as the time step.
 
 We will also assume the initial value of the velocities and $\phi$ are
@@ -217,7 +265,7 @@ the decay parameter $\alpha$ is $1/8$ for velocities and $1/4$ for $\phi$.
 N = 32
 d_theta = pi/33.0_wp
 d_lambda = 2*pi/32.0_wp
-dt = sqrt(d_lambda)
+dt = (d_lambda)**2
 num_steps = 1000
 
 call set_gaussian(u, 0.125_wp)

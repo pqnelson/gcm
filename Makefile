@@ -13,6 +13,7 @@ extract_tex:
 .PHONY: src
 src:
 	notangle -Rscalar-field-class.f90 nw/field.nw > src/scalar_field_class.f90
+	notangle -Rboussinesq.f90 nw/boussinesq.nw > src/boussinesq.f90
 	notangle -Rutils.f90 nw/utils.nw > src/utils.f90
 
 doc: extract_tex

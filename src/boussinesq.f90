@@ -8,7 +8,7 @@ program boussinesq
   N = 32
   d_theta = pi/33.0_wp
   d_lambda = 2*pi/32.0_wp
-  dt = sqrt(d_lambda) !0.001_wp
+  dt = (d_lambda)**2
   num_steps = 1000
 
   call set_gaussian(u, 0.125_wp)
@@ -21,12 +21,12 @@ program boussinesq
      phi_prev = phi
      uc = mul_sec_theta(u_prev, d_theta)
      u = u_prev &
-          - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(u_prev))/d_lambda &
-          + mult_fields(v_prev, diff_theta(u_prev))/d_theta &
-          + mul_sec_theta(diff_lambda(phi_prev), d_theta)/d_lambda)
+          - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(u_prev)/d_lambda) &
+          + mult_fields(v_prev, diff_theta(u_prev)/d_theta) &
+          + mul_sec_theta(diff_lambda(phi_prev)/d_lambda, d_theta))
      v = v_prev &
           - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(v_prev)/d_lambda) &
-          + mult_fields(v_prev, diff_theta(v_prev)) &
+          + mult_fields(v_prev, diff_theta(v_prev)/d_theta) &
           + mul_sec_theta(diff_theta(phi_prev)/d_theta, d_theta))
      phi = phi_prev &
           - dt*inv_earth_radius*(mult_fields(uc, diff_lambda(phi_prev)/d_lambda) &
@@ -34,7 +34,7 @@ program boussinesq
   end do
   print *, "u = ", u
 contains
-
+  
   pure function mult_fields(lhs, rhs) result(ans)
     real(wp), dimension(:,:), intent(in) :: lhs, rhs
     real(wp) :: ans(size(lhs,dim=1),size(lhs,dim=2))
@@ -45,7 +45,7 @@ contains
        ans(i,j) = lhs(i,j)*rhs(i,j)
     end do
   end function mult_fields
-    
+
   subroutine set_gaussian(field, decay)
     real(wp), dimension(:,:), intent(in out) :: field
     real(wp), intent(in) :: decay
@@ -70,9 +70,9 @@ contains
     real(wp) :: ans(size(field, dim=1), size(field, dim=2))
     real(wp), intent(in) :: d_theta
     integer(int32) :: i
-
+    
     do i=1,size(field,dim=2)
-       ans(:,i) = field(:,i)/cos(theta(i,d_theta))
+      ans(:,i) = field(:,i)/cos(theta(i,d_theta))
     end do
   end function mul_sec_theta
 
@@ -104,5 +104,4 @@ contains
        diff_theta(i-i+1,M) = 0.5*(field(i,M)-field(i,M-1))
     end do
   end function diff_theta
-  
 end program boussinesq
