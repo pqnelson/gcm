@@ -224,6 +224,7 @@ then iteratively stepping through time.
 do i=1, num_steps
    <<Main loop for [[boussinesq]]>>
 end do
+<<Check energy conservation for [[boussinesq]]>>
 @
 
 \subsection{Main loop for Boussinesq equations}
@@ -252,9 +253,15 @@ phi = phi_prev &
 @ 
 
 \subsection{Initializing parameters}
-We will suppose we are working with a $32\times32$ matrix, so we compute
-$\Delta\theta$ and $\Delta\lambda$ once and for all. For the choice of
-time-stepping, I'm going to pick $\Delta t=(\Delta\lambda)^{2}\approx0.0385531$
+We will suppose we are working with a
+$N_{\lambda}\times N_{\theta}=64\times32$ matrix, since 
+$\Delta\theta=\pi/N_{\theta}$ and $\Delta\lambda=2\pi/N_{\lambda}$.
+We want these two to be equal to each other, which means that
+$2N_{\theta}=N_{\lambda}$ and I just picked $N_{\lambda}=64$ for convenience.
+This gives us $\Delta\lambda\approx 0.0981748$
+For the choice of time-stepping, since I'm working with a
+quick-and-dirty ``first draft'' of a forward Euler time-step,
+I'm going to pick $\Delta t=(\Delta\lambda)^{2}\approx0.00963829$
 as the time step.
 
 We will also assume the initial value of the velocities and $\phi$ are
@@ -262,15 +269,15 @@ described by a Gaussian $\exp(-\alpha(\lambda^{2}+\theta^{2}))$ where
 the decay parameter $\alpha$ is $1/8$ for velocities and $1/4$ for $\phi$.
 
 <<Initialize [[boussinesq]] parameters>>=
-N = 32
-d_theta = pi/33.0_wp
-d_lambda = 2*pi/32.0_wp
+d_theta = pi/N_theta
+d_lambda = 2*pi/N_lambda
 dt = (d_lambda)**2
 num_steps = 1000
 
 call set_gaussian(u, 0.125_wp)
 call set_gaussian(v, 0.125_wp)
 call set_gaussian(phi, 0.25_wp)
+initial_energy = energy(u, v, phi, d_theta)
 @ 
 
 \subsection{Declaration of parameters}
@@ -282,10 +289,33 @@ We store $\Delta\theta$, $\Delta\lambda$, and $\Delta t$ as [[d_theta]],
 [[d_lambda]], and [[dt]], respectively.
 
 <<[[boussinesq]] program parameters>>=
-integer(int32) :: N, num_steps, i
-real(wp), dimension(32,32) :: u, u_prev, v, v_prev, phi, phi_prev, uc
-real(wp) :: d_theta, d_lambda, dt
+integer(int32), parameter :: N_lambda = 64, N_theta = 32
+integer(int32) :: num_steps, i
+real(wp), dimension(N_lambda,N_theta) :: u, u_prev, v, v_prev, phi, &
+     phi_prev, uc
+real(wp) :: d_theta, d_lambda, dt, initial_energy, final_energy
 @
+
+\subsection{Check energy is conserved}
+We are using the composite trapezoid rule to integrate the energy
+density over $\lambda$ and $\theta$, which means we would expect an
+error of
+\begin{equation}
+E\approx\frac{8\pi^{6}}{144N_{\theta}^{2}N_{\lambda}^{2}}\mathcal{E}''=(1.27341\times 10^{-5})\mathcal{E}''
+\end{equation}
+where $\mathcal{E}''$ is the second derivative of the energy density.
+We will find the difference between initial and final energies are
+$1.4545619419187306\times 10^{-5}$. Although this doesn't prove that the
+implementation is correct, this gives us greater confidence towards that
+end. 
+
+<<Check energy conservation for [[boussinesq]]>>=
+final_energy = energy(u, v, phi, d_theta)
+print *, "initial energy = ", initial_energy
+print *, "final energy = ", final_energy
+print *, "difference = ", final_energy - initial_energy
+@ 
+
 
 \section{Helper functions}
 
@@ -300,6 +330,10 @@ real(wp) :: d_theta, d_lambda, dt
 <<Derivative with respect to $\lambda$>>
 
 <<Derivative with respect to $\theta$>>
+
+<<Energy density for simple Boussinesq system>>
+
+<<Energy integral for simple Boussinesq system>>
 @
 
 \subsection{Componentwise-multiplication of fields}
@@ -354,7 +388,12 @@ end function mul_sec_theta
 @ %def mul_sec_theta
 
 \subsection{Computing theta} We need to convert between the index $k$
-and the longitude $\theta_{k} = k\,\Delta\theta = k\pi/(N+1)$.
+and the longitude,
+\begin{equation}
+\theta_{k} = \left(k - \frac{1}{2}\right)\Delta\theta - \frac{\pi}{2}.
+\end{equation}
+This will give us evenly-spaced values in the range
+$-(\pi/2)+\frac{1}{2}\Delta\theta\leq\theta_{k}\leq(\pi/2)-\frac{1}{2}\Delta\theta$.
 
 <<Compute longitude>>=
 pure function theta(n, d_theta)
@@ -362,14 +401,14 @@ pure function theta(n, d_theta)
   real(wp), intent(in) :: d_theta
   real(wp) :: theta
   ! assert(1 <= n <= N)
-  theta = (n*d_theta) - (0.5_wp)*pi
+  theta = ((n - 0.5_wp)*d_theta) - (0.5_wp)*pi
 end function theta
 @ 
 
 \subsection{Derivative with respect to latitude}
 Using centered difference for approximating the derivative with respect
 to $\lambda$, and periodicity for handling the derivatives at
-$\lambda_{n}$ for $n=1$ and $n=N$.
+$\lambda_{n}$ for $n=1$ and $n=N_{\lambda}$.
 
 <<Derivative with respect to $\lambda$>>=
 pure function diff_lambda(field)
@@ -399,36 +438,122 @@ nodes as adjacent:
 This tells us to identify $u_{\lambda,N+1}=u_{N-(\lambda-1),N}$ for the
 North pole, and $u_{\lambda,0}=u_{N-(\lambda-1),1}$ for the South pole.
 
+There is another way to approach computing the $\theta$-derivative near
+the pole, since $\theta_{1}$ is $\Delta\theta/2$ steps away: once at the
+pole, we are equally likely to go to any of the points on the
+penultimate parallel. Something like the following (first half of the
+step is on the left in black
+from $\lambda_{1}$ to the pole, then the next half of the step on the
+right):
+\begin{center}
+\includegraphics{img/boussinesq-grid-2.mps}\qquad\ \qquad
+\includegraphics{img/boussinesq-grid-3.mps}
+\end{center}
+Then, at the north pole $\theta_{N}$ the
+derivative would use the finite difference scheme
+\begin{subequations}
+\begin{equation}
+f'(\theta_{N},\lambda_{i})\approx\frac{\left(\frac{1}{N}\sum^{N}_{j=1}f(\theta_{N},\lambda_{j})\right) - f(\theta_{N-1},\lambda_{i})}{2\Delta\theta}.
+\end{equation}
+Similarly, at the South pole, the derivative would be approximated by
+\begin{equation}
+f'(\theta_{1},\lambda_{i})\approx\frac{f(\theta_{2},\lambda_{i}) - \left(\frac{1}{N}\sum^{N}_{j=1}f(\theta_{1},\lambda_{j})\right)}{2\Delta\theta}.
+\end{equation}
+\end{subequations}
+
 <<Derivative with respect to $\theta$>>=
 pure function diff_theta(field)
   real(wp), dimension(:,:), intent(in) :: field
-  real(wp) :: diff_theta(size(field, dim=1), size(field, dim=2))
-  integer(int32) :: M, i
+  real(wp) :: avg, diff_theta(size(field, dim=1), size(field, dim=2))
+  integer(int32) :: M, N
   M = size(field, dim=2)
+  N = size(field, dim=1)
   ! centered difference for periodic function
   diff_theta(:, 2:M-1) = 0.5*(field(:, 3:M)-field(:, 1:M-2))
   ! boundary conditions
-  do i=1,(M/2)
-     ! bottom
-     diff_theta(i,1) = 0.5*(field(i,2)-field(M-i+1,1))
-     diff_theta(M-i+1,1) = 0.5*(field(M-i+1,2)-field(i,1))
-     ! top
-     diff_theta(i,M) = 0.5*(field(M-i+1,M)-field(i,M-1))
-     diff_theta(i-i+1,M) = 0.5*(field(i,M)-field(i,M-1))
-  end do
+  ! north pole
+  avg = SUM(field(:,M))/N
+  diff_theta(:,M) = 0.5*(avg - field(:,M-1))
+  ! south pole
+  avg = SUM(field(:,1))/N
+  diff_theta(:,1) = 0.5*(field(:,2)-avg)
 end function diff_theta
 @ %def diff_theta
+
+\subsection{Energy Density}
+We will want to compute the total energy for the velocity vector fields
+before and after the simulation, to check if the total energy is in fact
+conserved. Towards that end, the energy will be:
+\begin{equation}
+E = \iint_{S^{2}}\left(\frac{u(\lambda,\theta)^{2}+v(\lambda,\theta)^{2}}{2}+\phi(\lambda,\theta)\right)r_{\odot}^{2}\cos(\theta)\,\D\theta\,\D\lambda
+\end{equation}
+(following Bernoulli's principle, we expect $\phi$ to contribute to the energy).
+We take as the definition of the energy density for the simple
+Boussinesq system
+\begin{equation}
+\mathcal{E}(\lambda,\theta) = \left(\frac{u(\lambda,\theta)^{2}+v(\lambda,\theta)^{2}}{2}+\phi(\lambda,\theta)\right)r_{\odot}^{2}\cos(\theta).
+\end{equation}
+This will be used in a product quadrature to numerically integrate over
+the sphere.
+
+Also note that multiplying by the square of the Earth's radius $r_{\odot}^{2}$
+will only re-scale the result, so we will omit it for expediency.
+
+<<Energy density for simple Boussinesq system>>=
+pure function energy_density(u, v, phi, i_lambda, j_theta, d_theta)
+  real(wp), dimension(:,:), intent(in) :: u, v, phi
+  integer(int32), intent(in) :: i_lambda, j_theta
+  real(wp), intent(in) :: d_theta
+  real(wp) :: energy_density
+  energy_density = (0.5*(u(i_lambda, j_theta)**2 + v(i_lambda, j_theta)**2) &
+       + phi(i_lambda, j_theta))*cos(theta(j_theta, d_theta))
+end function energy_density
+@ %def energy_density
+
+\subsection{Energy integral}
+We will use the trapezoid rule, twice,
+\begin{equation}
+f(\lambda) := \int^{\pi}_{0}\mathcal{E}(\lambda,\theta)\,\D\theta
+\approx\sum^{N_{\theta}-1}_{j=1}\frac{\mathcal{E}(\lambda,\theta_{j})+\mathcal{E}(\lambda,\theta_{j+1})}{2}\Delta\theta
+\end{equation}
+then integrating over the latitude (taking into account periodicity)
+\begin{equation}
+\int^{2\pi}_{0}f(\lambda)\,\D\lambda\approx\sum^{N_{\lambda}}_{i=1}\frac{f(\lambda_{i})+f(\lambda_{i+1})}{2}\Delta\lambda=\Delta\lambda\sum^{N_{\lambda}}_{i=1}f(\lambda_{i}).
+\end{equation}
+We have (unfolding the $\theta$ quadrature, collecting terms, and simplifying):
+\begin{equation}
+\iint_{S^{2}}\mathcal{E}(\lambda,\theta)\,\D\theta\,\D\lambda
+\approx\sum^{N_{\lambda}}_{i=1}\left[\frac{\mathcal{E}(\lambda_{i},\theta_{1})+\mathcal{E}(\lambda_{i},\theta_{N_{\theta}})}{2}+\sum^{N_{\theta}-2}_{j=2}\mathcal{E}(\lambda_{i},\theta_{j})\right]\Delta\theta\,\Delta\lambda
+\end{equation}
+
+<<Energy integral for simple Boussinesq system>>=
+pure function energy(u, v, phi, d_theta)
+  real(wp), dimension(:,:), intent(in) :: u, v, phi
+  real(wp), intent(in) :: d_theta
+  real(wp) :: energy
+  integer(int32) :: i, j
+  energy = 0.0_wp
+  do i=1, N_lambda
+     energy = energy + 0.5*(energy_density(u, v, phi, i, 1, d_theta) &
+          + energy_density(u, v, phi, i, N_theta, d_theta))
+     do j=2, N_theta-2
+        energy = energy + energy_density(u, v, phi, i, j, d_theta)
+     end do
+  end do
+  energy = energy * d_theta * (2*pi/N_lambda)
+end function energy
+@ %def energy
 
 \section{Concluding Remarks}
 
 \subsection{Pole Problem}
 If you look at how we handled forming a grid for the Earth, we began
-with a square $N\times N$ grid, then imposed periodicity on the
-$x$-axis, and ``sutured'' the poles together. For $N=32$, this means
-along the equator we would have about $198.944$ kilometers be the width
+with a rectangle $N_{\lambda}\times N_{\theta}$ grid, then imposed periodicity on the
+$\lambda$-axis, and ``sutured'' the poles together. For $N_{\lambda}=64$, this means
+along the equator we would have about $2\pi R/N_{\lambda}\approx 625$ kilometers be the width
 of a tile, whereas at the North or South poles we would have about
-$18.91$ kilometers be the width of a tile. This is an alarming
-difference in grid scale.
+$2\pi R\cos(\frac{1}{2}\pi-\pi/N_{\theta})/N_{\lambda}\approx61.26$ kilometers be the
+width of a tile. This is an alarming difference in grid scale.
 
 Further, we specifically chose the $\theta$ spacing to avoid having
 $\theta=0$ and $\theta=\pi$ be part of the grid, because it would have
