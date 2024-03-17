@@ -511,20 +511,23 @@ end function energy_density
 @ %def energy_density
 
 \subsection{Energy integral}
-We will use the trapezoid rule, twice,
+We will use the trapezoid rule, twice. First, integrating over the
+longitude $\theta$,
 \begin{equation}
 f(\lambda) := \int^{\pi}_{0}\mathcal{E}(\lambda,\theta)\,\D\theta
-\approx\sum^{N_{\theta}-1}_{j=1}\frac{\mathcal{E}(\lambda,\theta_{j})+\mathcal{E}(\lambda,\theta_{j+1})}{2}\Delta\theta
+\approx\sum^{N_{\theta}-1}_{j=1}\frac{\mathcal{E}(\lambda,\theta_{j})+\mathcal{E}(\lambda,\theta_{j+1})}{2}\Delta\theta,
 \end{equation}
-then integrating over the latitude (taking into account periodicity)
+then integrating over the latitude (taking into account periodicity),
 \begin{equation}
 \int^{2\pi}_{0}f(\lambda)\,\D\lambda\approx\sum^{N_{\lambda}}_{i=1}\frac{f(\lambda_{i})+f(\lambda_{i+1})}{2}\Delta\lambda=\Delta\lambda\sum^{N_{\lambda}}_{i=1}f(\lambda_{i}).
 \end{equation}
 We have (unfolding the $\theta$ quadrature, collecting terms, and simplifying):
 \begin{equation}
 \iint_{S^{2}}\mathcal{E}(\lambda,\theta)\,\D\theta\,\D\lambda
-\approx\sum^{N_{\lambda}}_{i=1}\left[\frac{\mathcal{E}(\lambda_{i},\theta_{1})+\mathcal{E}(\lambda_{i},\theta_{N_{\theta}})}{2}+\sum^{N_{\theta}-2}_{j=2}\mathcal{E}(\lambda_{i},\theta_{j})\right]\Delta\theta\,\Delta\lambda
+\approx\sum^{N_{\lambda}}_{i=1}\left[\frac{\mathcal{E}(\lambda_{i},\theta_{1})+\mathcal{E}(\lambda_{i},\theta_{N_{\theta}})}{2}+\sum^{N_{\theta}-1}_{j=2}\mathcal{E}(\lambda_{i},\theta_{j})\right]\Delta\theta\,\Delta\lambda
 \end{equation}
+Observe that the sum over $j$ has the correct bounds (from $j=2$ upto
+$N_{\theta}-1$) since these are the ``non-boundary terms''.
 
 <<Energy integral for simple Boussinesq system>>=
 pure function energy(u, v, phi, d_theta)
@@ -536,7 +539,7 @@ pure function energy(u, v, phi, d_theta)
   do i=1, N_lambda
      energy = energy + 0.5*(energy_density(u, v, phi, i, 1, d_theta) &
           + energy_density(u, v, phi, i, N_theta, d_theta))
-     do j=2, N_theta-2
+     do j=2, N_theta-1
         energy = energy + energy_density(u, v, phi, i, j, d_theta)
      end do
   end do

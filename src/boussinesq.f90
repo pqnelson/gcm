@@ -127,7 +127,7 @@ contains
     do i=1, N_lambda
        energy = energy + 0.5*(energy_density(u, v, phi, i, 1, d_theta) &
             + energy_density(u, v, phi, i, N_theta, d_theta))
-       do j=2, N_theta-2
+       do j=2, N_theta-1
           energy = energy + energy_density(u, v, phi, i, j, d_theta)
        end do
     end do
